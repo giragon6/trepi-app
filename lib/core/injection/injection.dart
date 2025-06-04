@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:trepi_app/core/config/app_config.dart';
 import 'package:trepi_app/core/network/api_client.dart';
 import 'package:trepi_app/features/food_search/data/datasources/food_data_source.dart';
 import 'package:trepi_app/features/food_search/data/repositories/food_repository_impl.dart';
@@ -10,12 +11,7 @@ final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
   getIt.registerLazySingleton<ApiClient>(
-    () => ApiClient(
-      baseUrl: const String.fromEnvironment(
-        'BASE_URL',
-        defaultValue: 'http://localhost:8000/api/v1',
-      ),
-    ),
+    () => ApiClient(baseUrl: AppConfig.apiBaseUrl),
   );
 
   getIt.registerLazySingleton<FoodDataSource>(
