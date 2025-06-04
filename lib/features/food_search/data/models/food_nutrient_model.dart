@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_nutrient.dart';
 
-part 'nutrient_model.g.dart';
+part 'food_nutrient_model.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class FoodNutrientModel extends FoodNutrient {

@@ -12,7 +12,7 @@ class FoodInitialState extends FoodState {}
 class FoodLoadingState extends FoodState {}
 
 class FoodLoadedState extends FoodState {
-  final FoodDetailsModel foodDetails;
+  final FoodDetails foodDetails;
   const FoodLoadedState(this.foodDetails);
 }
 

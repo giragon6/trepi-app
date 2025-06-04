@@ -8,5 +8,10 @@ abstract class FoodEvent extends Equatable {
 }
 
 class GetFoodDetailsEvent extends FoodEvent {
+  final int fdcId;
   
+  const GetFoodDetailsEvent(this.fdcId);
+  
+  @override
+  List<Object?> get props => [fdcId];
 }

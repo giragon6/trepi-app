@@ -3,29 +3,74 @@ import 'package:trepi_app/features/food_search/data/models/food_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
 
-part '../model/food_details_model.g.dart';
+part 'food_details_model.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
 class FoodDetailsModel extends FoodDetails {
   FoodDetailsModel({
-    required this.food,
+    required this.fdcId,
+    required this.dataType,
+    this.itemDescription,
+    this.foodCategoryId,
+    this.brandOwner,
+    this.brandName,
+    this.gtinUpc,
+    this.ingredientsStr,
+    this.notASignificantSourceOf,
+    this.servingSize,
+    this.servingSizeUnit,
+    this.householdServing,
+    this.brandedFoodCategory,    
     required this.nutrients
   }) : super(
-          food: food,
+          fdcId: fdcId,
+          dataType: dataType,
+          itemDescription: itemDescription,
+          foodCategoryId: foodCategoryId,
+          brandOwner: brandOwner,
+          brandName: brandName,
+          gtinUpc: gtinUpc,
+          ingredientsStr: ingredientsStr,
+          notASignificantSourceOf: notASignificantSourceOf,
+          servingSize: servingSize,
+          servingSizeUnit: servingSizeUnit,
+          householdServing: householdServing,
+          brandedFoodCategory: brandedFoodCategory,
           nutrients: nutrients,
         );
 
-  final FoodModel food;
+  @override
+  @JsonKey(required: true)
+  final int fdcId;
+
+  @JsonKey(required: true)
+  final String dataType;
+
+  String? itemDescription;
+  String? foodCategoryId;
+  String? brandOwner;
+  String? brandName;
+  String? gtinUpc;
+  String? ingredientsStr;
+  String? notASignificantSourceOf;
+  String? servingSize;
+  String? servingSizeUnit;
+  String? householdServing;
+  String? brandedFoodCategory;
+
   final List<FoodNutrientModel> nutrients;
   String? error;
 
   FoodDetailsModel.withError(String errorMessage) 
-  : food = FoodModel(fdcId: -1, dataType: ''),
+  : fdcId = -1,
+    dataType = '',
     nutrients = [],
-  super (
-    food: FoodModel(fdcId: -1, dataType: ''),
-    nutrients: [],
-  );
+    error = errorMessage, 
+    super(
+      fdcId: -1,
+      dataType: '',
+      nutrients: [],
+    );
 
   factory FoodDetailsModel.fromJson(Map<String, dynamic> json) =>
       _$FoodDetailsModelFromJson(json);
