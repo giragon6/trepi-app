@@ -8,8 +8,11 @@ class ApiClient {
   ApiClient({required this.baseUrl, http.Client? client})
     : _http = client ?? http.Client();
 
-  Future<http.Response> get(String path) =>
-    _http.get(Uri.parse('$baseUrl$path'));
+  Future<http.Response> get(String path, {Map<String, dynamic>? queryParams}) =>
+    _http.get(
+      Uri.parse('$baseUrl$path').replace(queryParameters: queryParams),
+      headers: {'Content-Type': 'application/json'},
+    );
 
   Future<http.Response> post(String path, Map<String, dynamic> body) =>
     _http.post(

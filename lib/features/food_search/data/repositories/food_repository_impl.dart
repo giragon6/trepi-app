@@ -1,5 +1,6 @@
 import 'package:trepi_app/features/food_search/data/datasources/food_data_source.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
+import 'package:trepi_app/features/food_search/domain/entities/food_search_result.dart';
 import 'package:trepi_app/features/food_search/domain/repositories/food_repository.dart';
 import 'package:trepi_app/utils/result.dart';
 
@@ -11,5 +12,32 @@ class FoodRepositoryImpl implements FoodRepository {
   @override
   Future<Result<FoodDetails>> getFoodDetailsById(int fdcId) async {
     return await _dataSource.fetchFoodDetailsById(fdcId);
+  }
+
+  @override
+  Future<Result<List<FoodSearchResult>>> searchFoods({
+    String? name,
+    String? dataType,
+    int? pageSize = 10,
+    int? pageNumber = 1,
+    String? sortBy,
+    String? sortOrder,
+    String? brandOwner,
+    String? brandName,
+    String? ingredient,
+    String? brandedFoodCategory
+  }) {
+    return _dataSource.searchFoods(
+      name,
+      dataType,
+      pageSize,
+      pageNumber,
+      sortBy,
+      sortOrder,
+      brandOwner,
+      brandName,
+      ingredient,
+      brandedFoodCategory,
+    );
   }
 }

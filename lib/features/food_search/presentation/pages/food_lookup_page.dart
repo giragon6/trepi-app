@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trepi_app/core/injection/injection.dart';
-import 'package:trepi_app/features/food_search/presentation/bloc/food_bloc.dart';
-import 'package:trepi_app/shared/widgets/food_display_widget.dart';
+import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
+import 'package:trepi_app/shared/widgets/food_display/food_display_widget.dart';
 
-class FoodSearchPage extends StatefulWidget {
-  const FoodSearchPage({super.key});
+class FoodLookupPage extends StatefulWidget {
+  const FoodLookupPage({super.key});
 
   @override
-  State<FoodSearchPage> createState() => _FoodSearchPageState();
+  State<FoodLookupPage> createState() => _FoodLookupPageState();
 }
 
-class _FoodSearchPageState extends State<FoodSearchPage> {
+class _FoodLookupPageState extends State<FoodLookupPage> {
   final _controller = TextEditingController();
-  late final FoodBloc _foodBloc;
+  late final FoodDetailsBloc _foodBloc;
 
   @override
   void initState() {
     super.initState();
-    _foodBloc = getIt<FoodBloc>();
+    _foodBloc = getIt<FoodDetailsBloc>();
   }
 
   @override
@@ -49,21 +49,21 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
             ),
             const SizedBox(height: 24),
             Expanded(
-              child: BlocBuilder<FoodBloc, FoodState>(
+              child: BlocBuilder<FoodDetailsBloc, FoodDetailsState>(
                 bloc: _foodBloc, 
                 builder: (context, state) {
-                  if (state is FoodInitialState) {
+                  if (state is FoodDetailsInitialState) {
                     return const Center(child: Text('Enter an FDC ID to search'));
                   }
-                  if (state is FoodLoadingState) {
+                  if (state is FoodDetailsLoadingState) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (state is FoodLoadedState) {
+                  if (state is FoodDetailsLoadedState) {
                     return FoodDisplayWidget(
                       foodDetails: state.foodDetails,
                     );
                   }
-                  if (state is FoodErrorState) {
+                  if (state is FoodDetailsErrorState) {
                     return Center(child: Text('Error: ${state.error}'));
                   }
                   return const SizedBox.shrink();

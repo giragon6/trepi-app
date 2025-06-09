@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:trepi_app/core/injection/injection.dart';
-import 'package:trepi_app/features/food_search/presentation/food_search_page.dart';
+import 'package:trepi_app/core/routing/app_router.dart';
+import 'package:trepi_app/features/food_search/presentation/pages/food_search_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Setup dependency injection
   await configureDependencies();
   
   runApp(const MyApp());
@@ -16,12 +16,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Trepi App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomePage(title: 'Trepi Home Page'),
+      routerConfig: appRouter,
     );
   }
 }
