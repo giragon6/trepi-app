@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:trepi_app/core/network/api_client.dart';
 import 'package:trepi_app/features/food_search/data/models/food_search_result_model.dart';
 import 'package:trepi_app/utils/result.dart';
@@ -24,7 +25,7 @@ class FoodDataSource {
     }
   }
 
-  Future<Result<List<FoodSearchResultModel>>> searchFoods(
+  Future<Result<List<FoodSearchResultModel>>> searchFoods({
     String? name,
     String? dataType,
     int? pageSize,
@@ -35,7 +36,7 @@ class FoodDataSource {
     String? brandName,
     String? ingredient,
     String? brandedFoodCategory,
-  ) async {
+  }) async {
     if (name == null && dataType == null && pageSize == null &&
         pageNumber == null && sortBy == null && sortOrder == null &&
         brandOwner == null && brandName == null && ingredient == null &&
@@ -43,19 +44,25 @@ class FoodDataSource {
       return Result.error(Exception('At least one search parameter must be provided'));
     }
     try {
+      debugPrint('Searching foods with parameters: '
+          'name: $name, dataType: $dataType, pageSize: $pageSize, '
+          'pageNumber: $pageNumber, sortBy: $sortBy, sortOrder: $sortOrder, '
+          'brandOwner: $brandOwner, brandName: $brandName, ingredient: $ingredient, '
+          'brandedFoodCategory: $brandedFoodCategory');
       final queryParameters = <String, String>{};
       if (name != null) queryParameters['name'] = name;
-      if (dataType != null) queryParameters['dataType'] = dataType;
-      if (pageSize != null) queryParameters['pageSize'] = pageSize.toString();
-      if (pageNumber != null) queryParameters['pageNumber'] = pageNumber.toString();
-      if (sortBy != null) queryParameters['sortBy'] = sortBy;
-      if (sortOrder != null) queryParameters['sortOrder'] = sortOrder;
-      if (brandOwner != null) queryParameters['brandOwner'] = brandOwner;
-      if (brandName != null) queryParameters['brandName'] = brandName;
+      if (dataType != null) queryParameters['data_type'] = dataType;
+      if (pageSize != null) queryParameters['page_size'] = pageSize.toString();
+      if (pageNumber != null) queryParameters['page_number'] = pageNumber.toString();
+      if (sortBy != null) queryParameters['sort_by'] = sortBy;
+      if (sortOrder != null) queryParameters['sort_order'] = sortOrder;
+      if (brandOwner != null) queryParameters['brand_owner'] = brandOwner;
+      if (brandName != null) queryParameters['brand_name'] = brandName;
       if (ingredient != null) queryParameters['ingredient'] = ingredient;
       if (brandedFoodCategory != null) {
-        queryParameters['brandedFoodCategory'] = brandedFoodCategory;
+        queryParameters['branded_food_category'] = brandedFoodCategory;
       }
+      debugPrint('Query parameters: $queryParameters');
       final res = await _apiClient.get(
         '/foods',
         queryParams: queryParameters,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
 import 'package:trepi_app/shared/widgets/food_display/food_display_widget.dart';
@@ -34,6 +35,10 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: const Text('Food Details'),
       ),
       body: BlocProvider.value(
@@ -55,7 +60,7 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
                   children: [
                     Text('Error: ${state.error}'),
                     ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                       child: const Text('Go Back'),
                     ),
                   ],

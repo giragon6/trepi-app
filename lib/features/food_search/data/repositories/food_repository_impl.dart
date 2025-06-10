@@ -28,16 +28,16 @@ class FoodRepositoryImpl implements FoodRepository {
     String? brandedFoodCategory
   }) {
     return _dataSource.searchFoods(
-      name,
-      dataType,
-      pageSize,
-      pageNumber,
-      sortBy,
-      sortOrder,
-      brandOwner,
-      brandName,
-      ingredient,
-      brandedFoodCategory,
+      name: name,
+      dataType: dataType,
+      pageSize: pageSize,
+      pageNumber: pageNumber,
+      sortBy: sortBy,
+      sortOrder: sortOrder,
+      brandOwner: brandOwner,
+      brandName: brandName,
+      ingredient: ingredient,
+      brandedFoodCategory: brandedFoodCategory
     );
   }
 }

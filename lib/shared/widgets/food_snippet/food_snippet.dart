@@ -15,7 +15,7 @@ class FoodSnippetWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go('/food/$fdcId');
+        context.push('/food/$fdcId');
       },
       child: Card(
         child: Padding(

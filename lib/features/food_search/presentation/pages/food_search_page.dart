@@ -43,7 +43,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
               onPressed: () {
                 final name = _controller.text.trim();
                 if (name.isNotEmpty) {
-                  _foodSearchBloc.add(GetFoodSearchEvent(name));
+                  _foodSearchBloc.add(GetFoodSearchEvent(name, 10, 1));
                 }
               },
               child: const Text('Search Food'),
@@ -60,8 +60,9 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (state is FoodSearchLoadedState) {
-                    // Display the list of food search results
-                    return ListView.builder(
+                    return Column(
+                      children: [
+                        Expanded(child: ListView.builder(
                       itemCount: state.foodResults.length,
                       itemBuilder: (context, index) {
                         final food = state.foodResults[index];
@@ -70,7 +71,27 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
                           fdcId: food.fdcId.toString(),
                         );
                       },
-                    );
+                    )),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: state.isFirstPage ? null : () {
+                            final name = _controller.text.trim();
+                            _foodSearchBloc.add(GetFoodSearchEvent(name, 10, state.pageNumber - 1));
+                          }, 
+                          child: const Icon(Icons.arrow_back, size: 24),
+                        ),
+                        ElevatedButton(
+                          onPressed: state.isLastPage ? null : () {
+                            final name = _controller.text.trim();
+                            _foodSearchBloc.add(GetFoodSearchEvent(name, 10, state.pageNumber + 1));
+                          },
+                          child: const Icon(Icons.arrow_forward, size: 24),
+                        ),
+                      ]  
+                    )
+            ]);
                   }
                   if (state is FoodSearchErrorState) {
                     return Center(child: Text('Error: ${state.error}'));

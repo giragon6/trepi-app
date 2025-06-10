@@ -13,8 +13,15 @@ class FoodSearchLoadingState extends FoodSearchState {}
 
 class FoodSearchLoadedState extends FoodSearchState {
   final List<FoodSearchResult> foodResults;
+  final bool isFirstPage;
+  final bool isLastPage;
+  final int pageSize;
+  final int pageNumber;
   
-  const FoodSearchLoadedState(this.foodResults);
+  const FoodSearchLoadedState(this.foodResults, this.isFirstPage, this.isLastPage, this.pageSize, this.pageNumber);
+  
+  @override
+  List<Object?> get props => [foodResults, isLastPage, pageSize, pageNumber];
 }
 
 class FoodSearchErrorState extends FoodSearchState {

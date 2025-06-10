@@ -7,8 +7,8 @@ abstract class FoodRepository {
   Future<Result<List<FoodSearchResult>>> searchFoods({
     String? name,
     String? dataType,
-    int? pageSize = 10,
-    int? pageNumber = 1,
+    int? pageSize,
+    int? pageNumber,
     String? sortBy,
     String? sortOrder,
     String? brandOwner,
