@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/core/routing/app_router.dart';
-import 'package:trepi_app/features/food_search/presentation/pages/food_lookup_page.dart';
 import 'package:trepi_app/features/food_search/presentation/pages/food_search_page.dart';
 
 void main() async {
@@ -35,7 +34,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: const FoodLookupPage(),
+      body: const FoodSearchPage(),
     );
   }
 }
