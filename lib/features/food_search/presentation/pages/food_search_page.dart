@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_search/food_search_bloc.dart';
-import 'package:trepi_app/shared/widgets/food_display/food_display_widget.dart';
 import 'package:trepi_app/shared/widgets/food_snippet/food_snippet.dart';
 
 class FoodSearchPage extends StatefulWidget {
@@ -30,14 +29,14 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
+            Card(child: TextField(
               controller: _controller,
               decoration: const InputDecoration(
                 labelText: 'Enter food name',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
-            ),
+            )),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
