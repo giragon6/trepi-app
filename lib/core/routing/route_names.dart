@@ -2,5 +2,6 @@ class RouteNames {
   static const String home = '/';
   static const String foodSearch = '/search';
   static const String foodLookup = '/lookup';
-  static const String foodDetails = '/food/:fdcId';
+  static const String foodDetails = '/food';
+  static const String foodDetailsWithParam = '/food/:fdcId';
 }
