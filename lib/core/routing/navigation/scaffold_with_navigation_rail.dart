@@ -6,13 +6,15 @@ class ScaffoldWithNavigationRail extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
   final List<AdaptiveScaffoldDestination> destinations;
+  final Widget? trailing;
   
   const ScaffoldWithNavigationRail({
     super.key,
     required this.body,
     required this.selectedIndex,
     required this.onDestinationSelected,
-    required this.destinations
+    required this.destinations,
+    required this.trailing,
   });
 
   @override
@@ -29,7 +31,8 @@ class ScaffoldWithNavigationRail extends StatelessWidget {
                 icon: destination.icon,
                 label: Text(destination.label),
               );
-            }).toList()
+            }).toList(),
+            trailing: trailing
           ),
           const VerticalDivider(thickness: 1, width: 1),
           Expanded(

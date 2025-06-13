@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:trepi_app/features/authentication/domain/entities/user_entity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:trepi_app/features/authentication/domain/repositories/authentication_repository.dart';
 import 'package:trepi_app/utils/result.dart';
 
@@ -36,16 +36,18 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
             dob: DateTime.now(),
             isAgeValid: true,
             isFormValidateFailed: false)) {
-    on<EmailChanged>(_onEmailChanged);
-    on<PasswordChanged>(_onPasswordChanged);
-    on<NameChanged>(_onNameChanged);
-    on<DobChanged>(_onDobChanged);
-    on<FormSubmitted>(_onFormSubmitted);
-    on<FormSucceeded>(_onFormSucceeded);
+    on<EmailChangedEvent>(_onEmailChanged);
+    on<PasswordChangedEvent>(_onPasswordChanged);
+    on<NameChangedEvent>(_onNameChanged);
+    on<DobChangedEvent>(_onDobChanged);
+    on<FormSubmittedEvent>(_onFormSubmitted);
+    on<FormSucceededEvent>(_onFormSucceeded);
   }
+
   final RegExp _emailRegExp = RegExp(
     r'^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$',
   );
+
   final RegExp _passwordRegExp = RegExp(
     r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
   );
@@ -58,21 +60,17 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
     return _passwordRegExp.hasMatch(password);
   }
 
-  bool _isNameValid(String? displayName) {
-    return displayName!.isNotEmpty;
+  bool _isNameValid(String displayName) {
+    return displayName.isNotEmpty;
   }
 
   bool _isDobValid(DateTime dob) {
     DateTime today = DateTime.now();
     DateTime firstDate = DateTime(1900);
-    int age = today.year - dob.year;
-    if (dob.month > today.month || (dob.month == today.month && dob.day > today.day)) {
-      age--;
-    }
     return dob.isAfter(firstDate) && dob.isBefore(today);
   }
 
-  _onEmailChanged(EmailChanged event, Emitter<FormsValidate> emit) {
+  _onEmailChanged(EmailChangedEvent event, Emitter<FormsValidate> emit) {
     emit(state.copyWith(
       isFormSuccessful: false,
       isFormValid: false,
@@ -81,19 +79,21 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
       email: event.email,
       isEmailValid: _isEmailValid(event.email),
     ));
+    _checkFormValidity(emit);
   }
 
-  _onPasswordChanged(PasswordChanged event, Emitter<FormsValidate> emit) {
+  _onPasswordChanged(PasswordChangedEvent event, Emitter<FormsValidate> emit) {
     emit(state.copyWith(
       isFormSuccessful: false,
       isFormValidateFailed: false,
       errorMessage: "",
       password: event.password,
-      isPasswordValid: _isPasswordValid(event.password),
+      isPasswordValid: event.status == Status.signUp ? _isPasswordValid(event.password) : true,
     ));
+    _checkFormValidity(emit);
   }
 
-  _onNameChanged(NameChanged event, Emitter<FormsValidate> emit) {
+  _onNameChanged(NameChangedEvent event, Emitter<FormsValidate> emit) {
     emit(state.copyWith(
       isFormSuccessful: false,
       isFormValidateFailed: false,
@@ -101,9 +101,10 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
       displayName: event.displayName,
       isNameValid: _isNameValid(event.displayName),
     ));
+    _checkFormValidity(emit);
   }
 
-  _onDobChanged(DobChanged event, Emitter<FormsValidate> emit) {
+  _onDobChanged(DobChangedEvent event, Emitter<FormsValidate> emit) {
     emit(state.copyWith(
       isFormSuccessful: false,
       isFormValidateFailed: false,
@@ -111,38 +112,57 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
       dob: event.dob,
       isAgeValid: _isDobValid(event.dob),
     ));
+    _checkFormValidity(emit);
   }
 
-  _onFormSubmitted(FormSubmitted event, Emitter<FormsValidate> emit) async {
+  _onFormSubmitted(FormSubmittedEvent event, Emitter<FormsValidate> emit) async {
     AuthInfo authInfo = AuthInfo(
       email: state.email,
       password: state.password,
       displayName: state.displayName,
       dob: state.dob,
     );
-
     if (event.value == Status.signUp) {
-      await _updateUIAndSignUp(event, emit, authInfo);
+      await _trySignUp(event, emit, authInfo);
     } else if (event.value == Status.signIn) {
       await _authenticateUser(event, emit, authInfo);
     }
   }
 
-  _updateUIAndSignUp(
-      FormSubmitted event, Emitter<FormsValidate> emit, AuthInfo authInfo) async {
-    emit(
-      state.copyWith(errorMessage: "",
+  _checkFormValidity(Emitter<FormsValidate> emit) {
+    emit(state.copyWith(
         isFormValid: _isPasswordValid(state.password) &&
             _isEmailValid(state.email) &&
-            _isDobValid(state.dob) &&
-            _isNameValid(state.displayName),
-        isLoading: true));
+            _isNameValid(state.displayName ?? '') &&
+            _isDobValid(state.dob),
+        isLoading: false,
+        errorMessage: ""));
+  }
+
+  _trySignUp(
+      FormSubmittedEvent event, Emitter<FormsValidate> emit, AuthInfo authInfo) async {
+    _checkFormValidity(emit);
     if (state.isFormValid) {
-      try {
-        await _authenticationRepository.signUp(authInfo.email, authInfo.password);
-      } on FirebaseAuthException catch (e) {
-        emit(state.copyWith(
-            isLoading: false, errorMessage: e.message, isFormValid: false));
+      debugPrint("Form is valid, attempting sign up");
+      emit(state.copyWith(
+          isLoading: true, isFormValidateFailed: false, errorMessage: ""));
+      
+      final result = await _authenticationRepository.signUp(
+          authInfo.email, 
+          authInfo.password, 
+          authInfo.displayName, 
+          authInfo.dob
+        );
+    
+      switch (result) {
+        case Ok():
+          debugPrint('Signed up successfully');
+          emit(state.copyWith(isFormSuccessful: true, isLoading: false));
+        case Error():
+          emit(state.copyWith(
+              isLoading: false, errorMessage: result.error.toString(), isFormValid: false));
+          debugPrint("Sign up failed: ${result.error}");
+
       }
     } else {
       emit(state.copyWith(
@@ -151,7 +171,7 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
   }
 
   _authenticateUser(
-      FormSubmitted event, Emitter<FormsValidate> emit, AuthInfo authInfo) async {
+      FormSubmittedEvent event, Emitter<FormsValidate> emit, AuthInfo authInfo) async {
     emit(state.copyWith(errorMessage: "",
         isFormValid:
             _isPasswordValid(state.password) && _isEmailValid(state.email),
@@ -159,17 +179,9 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
     if (state.isFormValid) {
       try {
         Result<UserCredential> result = await _authenticationRepository.signInWithEmailAndPassword(authInfo.email, authInfo.password);
+        emit(state.copyWith(isLoading: true, isFormValidateFailed: false, errorMessage: ""));
         switch (result) {
           case Ok():
-            UserCredential authUser = result.value;
-            UserEntity updatedUser = UserEntity(
-              providerId: authUser.user?.providerData.isNotEmpty == true
-                  ? authUser.user!.providerData[0].providerId
-                  : '',
-              uid: authUser.user?.uid ?? '',
-              email: authInfo.email,
-              displayName: authInfo.displayName ?? 'Anonymous',
-            );
             emit(state.copyWith(isFormSuccessful: true, isLoading: false));
           case Error():
             emit(state.copyWith(
@@ -187,7 +199,7 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
     }
   }
 
-  _onFormSucceeded(FormSucceeded event, Emitter<FormsValidate> emit) {
+  _onFormSucceeded(FormSucceededEvent event, Emitter<FormsValidate> emit) {
     emit(state.copyWith(isFormSuccessful: true));
   }
 }

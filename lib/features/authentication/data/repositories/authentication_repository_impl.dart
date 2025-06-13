@@ -24,12 +24,15 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   }
 
   @override
-  Future<Result<void>> signUp(String email, String password) async {
-    final userCredential = await _dataSource.signUp(email, password);
-    if (userCredential == null) {
-      return Result.error(Exception('Sign up failed'));
+  Future<Result<void>> signUp(String email, String password, String? displayName, DateTime? dob) async {
+    final result = await _dataSource.signUp(email, password, displayName, dob);
+
+    switch (result) {
+      case Ok():
+        return Result.ok(null);
+      case Error():
+        return Result.error(Exception('Sign up failed: ${result.error}'));
     }
-    return Result.ok(null);
   }
   
   @override
@@ -39,5 +42,25 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
       return Result.error(Exception('Sign in failed'));
     }
     return Result.ok(userCredential);
+  }
+
+  @override
+  Future<Result<void>> verifyEmail() async {
+    try {
+      await _dataSource.verifyEmail();
+      return Result.ok(null);
+    } catch (e) {
+      return Result.error(Exception('Email verification failed: $e'));
+    }
+  }
+
+  @override
+  Future<Result<void>> refreshCurrentUser() async {
+    try {
+      await _dataSource.refreshCurrentUser();
+      return Result.ok(null);
+    } catch (e) {
+      return Result.error(Exception('User refresh failed: $e'));
+    }
   }
 }

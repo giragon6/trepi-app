@@ -9,48 +9,50 @@ abstract class FormEvent extends Equatable {
   List<Object> get props => [];
 }
  
-class EmailChanged extends FormEvent {
+class EmailChangedEvent extends FormEvent {
   final String email;
-  const EmailChanged(this.email);
+  const EmailChangedEvent(this.email);
  
   @override
   List<Object> get props => [email];
 }
  
-class PasswordChanged extends FormEvent {
+class PasswordChangedEvent extends FormEvent {
   final String password;
-  const PasswordChanged(this.password);
+  final Status status;
+
+  const PasswordChangedEvent(this.password, {required this.status});
  
   @override
   List<Object> get props => [password];
 }
  
-class NameChanged extends FormEvent {
+class NameChangedEvent extends FormEvent {
   final String displayName;
-  const NameChanged(this.displayName);
+  const NameChangedEvent(this.displayName);
  
   @override
   List<Object> get props => [displayName];
 }
  
-class DobChanged extends FormEvent {
+class DobChangedEvent extends FormEvent {
   final DateTime dob;
-  const DobChanged(this.dob);
+  const DobChangedEvent(this.dob);
  
   @override
   List<Object> get props => [dob];
 }
  
-class FormSubmitted extends FormEvent {
+class FormSubmittedEvent extends FormEvent {
   final Status value;
-  const FormSubmitted({required this.value});
+  const FormSubmittedEvent({required this.value});
  
   @override
   List<Object> get props => [value];
 }
  
-class FormSucceeded extends FormEvent {
-  const FormSucceeded();
+class FormSucceededEvent extends FormEvent {
+  const FormSucceededEvent();
  
   @override
   List<Object> get props => [];

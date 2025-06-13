@@ -20,6 +20,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     
     on<SignOutEvent>(_onSignOut);
     on<LoadAuthenticationEvent>(_onLoadAuthentication);
+    on<RefreshUserEvent>(_onRefreshUser);
+    on<ResendVerificationEvent>(_onResendVerification);
   }
 
   void _startListeningToAuthChanges() {
@@ -34,7 +36,11 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
               emit(AuthenticationErrorState('User not found'));
             }
           case Error():
-            emit(AuthenticationErrorState(result.error.toString()));
+            if (result.error.toString().contains('No user signed in')) {
+              emit(AuthenticationSignedOutState());
+            } else {
+              emit(AuthenticationErrorState(result.error.toString()));
+            }
         }
       },
       onError: (error) {
@@ -46,6 +52,7 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
   Future<void> _onSignOut(SignOutEvent event, Emitter<AuthenticationState> emit) async {
     try {
       await _authenticationRepository.signOut();
+      emit(AuthenticationSignedOutState());
     } catch (e) {
       emit(AuthenticationErrorState('Sign out failed: $e'));
     }
@@ -53,6 +60,22 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
   Future<void> _onLoadAuthentication(LoadAuthenticationEvent event, Emitter<AuthenticationState> emit) async {
     emit(AuthenticationLoadingState(isLoading: true));
+  }
+
+  Future<void> _onRefreshUser(RefreshUserEvent event, Emitter<AuthenticationState> emit) async {
+    try {
+      await _authenticationRepository.refreshCurrentUser();
+    } catch (e) {
+      emit(AuthenticationErrorState('Failed to refresh user: $e'));
+    }
+  }
+
+  Future<void> _onResendVerification(ResendVerificationEvent event, Emitter<AuthenticationState> emit) async {
+    try {
+      await _authenticationRepository.verifyEmail();
+    } catch (e) {
+      emit(AuthenticationErrorState('Failed to resend verification email: $e'));
+    }
   }
 
   @override

@@ -67,3 +67,5 @@ flutter:
 
   assets:
     - assets/data/nutrient_data.json
+    - assets/images/default_avatar.png
+    - assets/images/default_avatar_padded.png

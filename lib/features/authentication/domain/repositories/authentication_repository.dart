@@ -6,6 +6,8 @@ abstract class AuthenticationRepository {
   Stream<Result<UserEntity>> getCurrentUser();
   
   Future<Result<UserCredential>> signInWithEmailAndPassword(String email, String password);
-  Future<Result<void>> signUp(String email, String password);
+  Future<Result<void>> signUp(String email, String password, String? displayName, DateTime? dob);
   Future<Result<void>> signOut();
+  Future<Result<void>> refreshCurrentUser();
+  Future<Result<void>> verifyEmail();
 }

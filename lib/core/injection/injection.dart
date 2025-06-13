@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trepi_app/core/config/app_config.dart';
 import 'package:trepi_app/core/network/api_client.dart';

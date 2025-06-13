@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/navigation/scaffold_with_navigation_bar.dart';
 import 'package:trepi_app/core/routing/navigation/scaffold_with_navigation_rail.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
+import 'package:trepi_app/features/authentication/presentation/widgets/auth_image_widget.dart';
 
 enum ScreenSize {
   small(pixels: 0),
@@ -43,6 +44,11 @@ class AdaptiveScaffold extends StatelessWidget {
       icon: Icon(Icons.info),
       location: RouteNames.foodLookup,
     ),
+    AdaptiveScaffoldDestination(
+      label: 'Profile',
+      icon: Icon(Icons.person_2), // Placeholder for AuthImageWidget
+      location: RouteNames.profile,
+    ),
   ];
 
   const AdaptiveScaffold({
@@ -63,16 +69,27 @@ class AdaptiveScaffold extends StatelessWidget {
       if (constraints.maxWidth < ScreenSize.medium.pixels) {
         return ScaffoldWithNavigationBar(
           body: navigationShell,
-          selectedIndex: navigationShell.currentIndex ?? 0,
+          selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _goBranch,
           destinations: destinations
         );
       } else {
         return ScaffoldWithNavigationRail(
           body: navigationShell,
-          selectedIndex: navigationShell.currentIndex ?? 0,
+          selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _goBranch,
-          destinations: destinations
+          destinations: destinations,
+          trailing: Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: AuthImageWidget(
+                  onPressed: () => context.push(RouteNames.profile)
+                )
+              )
+            ),
+          )
         );
       }
     });

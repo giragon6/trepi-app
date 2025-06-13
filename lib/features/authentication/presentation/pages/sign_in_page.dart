@@ -5,8 +5,8 @@ import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
 
-class SignUpPage extends StatelessWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+class SignInPage extends StatelessWidget {
+  const SignInPage({Key? key}) : super(key: key);
  
   @override
   Widget build(BuildContext context) {
@@ -46,14 +46,14 @@ class SignUpPage extends StatelessWidget {
         ],
         child: Scaffold(
             backgroundColor: Colors.white,
-            body: _SignUpForm()
+            body: _SignInForm()
           )
         );
   }
 }
 
-class _SignUpForm extends StatelessWidget {
-  const _SignUpForm();
+class _SignInForm extends StatelessWidget {
+  const _SignInForm();
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class _SignUpForm extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Create an account',
+              'Sign In',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.black,
@@ -79,17 +79,13 @@ class _SignUpForm extends StatelessWidget {
             SizedBox(height: size.height * 0.02),
             const _PasswordField(),
             SizedBox(height: size.height * 0.02),
-            const _DisplayNameField(),
-            SizedBox(height: size.height * 0.02),
-            const _DobField(),
-            SizedBox(height: size.height * 0.04),
             const _SubmitButton(),
             SizedBox(height: size.height * 0.02),
             TextButton(
-              onPressed: () => context.push(RouteNames.signIn),
+              onPressed: () => context.push(RouteNames.signUp),
               child: const Text(
-                'Already have an account? Sign In',
-                style: TextStyle(color: Colors.blue),
+                'Don\'t have an account? Sign Up',
+                style: TextStyle(color: Colors.blue, fontSize: 16),
               ),
             ),
           ],
@@ -116,7 +112,6 @@ class _EmailField extends StatelessWidget {
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                 labelText: 'Email',
-                helperText: 'e.g., example@gmail.com',
                 errorText: !state.isEmailValid
                     ? 'Please enter a valid email address'
                     : null,
@@ -154,95 +149,9 @@ class _PasswordField extends StatelessWidget {
                 borderSide: const BorderSide(color: Colors.grey, width: 1.0),
               ),
               labelText: 'Password',
-              errorMaxLines: 2,
-              errorText: !state.isPasswordValid
-                  ? 'Password must be at least 8 characters and contain at least one letter and number'
-                  : null,
             ),
             onChanged: (value) {
-              context.read<FormBloc>().add(PasswordChangedEvent(value, status: Status.signUp));
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _DisplayNameField extends StatelessWidget {
-  const _DisplayNameField({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return BlocBuilder<FormBloc, FormsValidate>(
-      builder: (context, state) {
-        return SizedBox(
-          width: size.width * 0.8,
-          child: TextFormField(
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Colors.grey, width: 1.0),
-              ),
-              labelText: 'Name',
-              errorMaxLines: 2,
-              errorText:
-                  !state.isNameValid ? 'Name cannot be empty' : null,
-            ),
-            onChanged: (value) {
-              context.read<FormBloc>().add(NameChangedEvent(value));
-            },
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _DobField extends StatelessWidget {
-  const _DobField({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return BlocBuilder<FormBloc, FormsValidate>(
-      builder: (context, state) {
-        return SizedBox(
-          width: size.width * 0.8,
-          child: TextFormField(
-            readOnly: true,
-            controller: TextEditingController(
-              text: '${state.dob.day}/${state.dob.month}/${state.dob.year}'
-            ),
-            decoration: InputDecoration(
-              labelText: 'Date of Birth',
-              hintText: 'Select your date of birth',
-              suffixIcon: const Icon(Icons.calendar_today),
-              errorText: !state.isAgeValid 
-                ? 'Please select a valid date of birth' 
-                : null,
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 15.0, 
-                horizontal: 10.0
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                borderSide: const BorderSide(color: Colors.grey, width: 1.0),
-              ),
-            ),
-            onTap: () async {
-              final DateTime? pickedDate = await showDatePicker(
-                context: context,
-                firstDate: DateTime(1900),
-                lastDate: DateTime.now(),
-              );
-              
-              if (pickedDate != null) {
-                context.read<FormBloc>().add(DobChangedEvent(pickedDate));
-              }
+              context.read<FormBloc>().add(PasswordChangedEvent(value, status: Status.signIn));
             },
           ),
         );
@@ -266,7 +175,7 @@ class _SubmitButton extends StatelessWidget {
           width: MediaQuery.of(context).size.width * 0.8,
           height: 50,
           child: ElevatedButton(
-            onPressed: () => context.read<FormBloc>().add(const FormSubmittedEvent(value: Status.signUp)),
+            onPressed: () => context.read<FormBloc>().add(const FormSubmittedEvent(value: Status.signIn)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
@@ -275,7 +184,7 @@ class _SubmitButton extends StatelessWidget {
               ),
             ),
             child: const Text(
-              'Sign Up',
+              'Sign In',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),

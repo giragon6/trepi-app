@@ -4,17 +4,17 @@ import 'package:trepi_app/core/routing/navigation/adaptive_scaffold.dart';
 
 class ScaffoldWithNavigationBar extends StatelessWidget {
   final List<AdaptiveScaffoldDestination> destinations;
+  final Widget body;
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
 
   const ScaffoldWithNavigationBar({
     super.key,
     required this.body,
     required this.selectedIndex,
     required this.onDestinationSelected,
-    required this.destinations
+    required this.destinations,
   });
-  final Widget body;
-  final int selectedIndex;
-  final ValueChanged<int> onDestinationSelected;
 
   @override
   Widget build(BuildContext context) {

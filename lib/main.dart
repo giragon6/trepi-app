@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,9 +18,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  if (const bool.fromEnvironment('dart.vm.product') == false) {
-    await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  }
+  // if (const bool.fromEnvironment('dart.vm.product') == false) {
+  //   await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // }
   
   runApp(const MyApp());
 }
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthenticationBloc>(
-          create: (context) => getIt<AuthenticationBloc>()..add(LoadAuthenticationEvent()),
+          create: (context) => getIt<AuthenticationBloc>(),
         ),
         BlocProvider<FormBloc>(
           create: (context) => getIt<FormBloc>(),

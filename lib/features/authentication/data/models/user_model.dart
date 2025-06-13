@@ -11,12 +11,14 @@ class UserModel extends UserEntity {
     required String uid,
     required String displayName,
     required String email,
+    required bool isEmailVerified,
     photoUrl,
   }) : super(
           providerId: providerId,
           uid: uid,
           displayName: displayName,
           email: email,
+          isEmailVerified: isEmailVerified,
           photoUrl: photoUrl,
         );
 
@@ -28,6 +30,7 @@ class UserModel extends UserEntity {
       uid: '',
       displayName: '',
       email: '',
+      isEmailVerified: false,
       photoUrl: null,
     );
 
