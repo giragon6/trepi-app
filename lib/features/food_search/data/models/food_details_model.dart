@@ -1,5 +1,4 @@
 import 'package:trepi_app/features/food_search/data/models/food_nutrient_model.dart';
-import 'package:trepi_app/features/food_search/data/models/food_model.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
 

@@ -21,7 +21,7 @@ class ScaffoldWithNavigationRail extends StatelessWidget {
       body: Row(
         children: [
           NavigationRail(
-            selectedIndex: selectedIndex,
+            selectedIndex: (0 <= selectedIndex && selectedIndex < destinations.length) ? selectedIndex : 0,
             onDestinationSelected: onDestinationSelected,
             labelType: NavigationRailLabelType.all,
             destinations: destinations.map((destination) {

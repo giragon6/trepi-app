@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key, required this.title});
+  const HomePage({super.key});
   
-  final String title;
+  final String title = 'Trepi App';
 
   @override
   Widget build(BuildContext context) {

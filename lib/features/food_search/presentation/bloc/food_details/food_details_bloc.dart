@@ -24,7 +24,7 @@ class FoodDetailsBloc extends Bloc<FoodDetailsEvent, FoodDetailsState> {
     final result = await _requestFoodDetails.getFoodDetails(event.fdcId);
     try {
 
-      switch(result) {
+      switch (result) {
         case Ok<FoodDetails>(): {
           emit(FoodDetailsLoadedState(result.value));
         }

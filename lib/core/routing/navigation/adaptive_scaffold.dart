@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/navigation/scaffold_with_navigation_bar.dart';
 import 'package:trepi_app/core/routing/navigation/scaffold_with_navigation_rail.dart';
+import 'package:trepi_app/core/routing/route_names.dart';
 
 enum ScreenSize {
   small(pixels: 0),
@@ -30,17 +31,17 @@ class AdaptiveScaffold extends StatelessWidget {
     AdaptiveScaffoldDestination(
       label: 'Home', 
       icon: Icon(Icons.home), 
-      location: '/'
+      location: RouteNames.home
     ),
     AdaptiveScaffoldDestination(
       label: 'Food Search',
       icon: Icon(Icons.search),
-      location: '/search',
+      location: RouteNames.foodSearch,
     ),
     AdaptiveScaffoldDestination(
       label: 'Food ID Lookup',
       icon: Icon(Icons.info),
-      location: '/lookup',
+      location: RouteNames.foodLookup,
     ),
   ];
 
@@ -62,14 +63,14 @@ class AdaptiveScaffold extends StatelessWidget {
       if (constraints.maxWidth < ScreenSize.medium.pixels) {
         return ScaffoldWithNavigationBar(
           body: navigationShell,
-          selectedIndex: navigationShell.currentIndex,
+          selectedIndex: navigationShell.currentIndex ?? 0,
           onDestinationSelected: _goBranch,
           destinations: destinations
         );
       } else {
         return ScaffoldWithNavigationRail(
           body: navigationShell,
-          selectedIndex: navigationShell.currentIndex,
+          selectedIndex: navigationShell.currentIndex ?? 0,
           onDestinationSelected: _goBranch,
           destinations: destinations
         );

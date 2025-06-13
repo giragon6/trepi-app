@@ -1,6 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trepi_app/core/config/app_config.dart';
 import 'package:trepi_app/core/network/api_client.dart';
+import 'package:trepi_app/features/authentication/data/datasources/authentication_data_source.dart';
+import 'package:trepi_app/features/authentication/data/repositories/authentication_repository_impl.dart';
+import 'package:trepi_app/features/authentication/domain/repositories/authentication_repository.dart';
+import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
+import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
 import 'package:trepi_app/features/food_search/data/datasources/food_data_source.dart';
 import 'package:trepi_app/features/food_search/data/repositories/food_repository_impl.dart';
 import 'package:trepi_app/features/food_search/domain/repositories/food_repository.dart';
@@ -38,5 +44,27 @@ Future<void> configureDependencies() async {
 
   getIt.registerFactory<FoodSearchBloc>(
     () => FoodSearchBloc(searchFood: getIt<SearchFood>()),
+  );
+
+  getIt.registerLazySingleton<AppConfig>(
+    () => AppConfig(),
+  );
+
+  getIt.registerLazySingleton<FormBloc>(
+    () => FormBloc(getIt<AuthenticationRepository>()),
+  );
+  
+  getIt.registerLazySingleton<AuthenticationRepository>(
+    () => AuthenticationRepositoryImpl(getIt<AuthenticationDataSource>()),
+  );
+
+  getIt.registerLazySingleton<AuthenticationDataSource>(
+    () => AuthenticationDataSource(),
+  );
+
+  getIt.registerLazySingleton<AuthenticationBloc>(
+    () => AuthenticationBloc(
+      getIt<AuthenticationRepository>(),
+    )
   );
 }

@@ -1,4 +1,3 @@
-import 'package:trepi_app/features/food_search/domain/entities/food.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_nutrient.dart';
 
 class FoodDetails {
