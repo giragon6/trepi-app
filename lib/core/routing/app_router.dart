@@ -14,6 +14,9 @@ import 'package:trepi_app/features/food_search/presentation/pages/food_details_p
 import 'package:trepi_app/features/food_search/presentation/pages/food_lookup_page.dart';
 import 'package:trepi_app/features/food_search/presentation/pages/food_search_page.dart';
 import 'package:trepi_app/features/home/presentation/pages/home_page.dart';
+import 'package:trepi_app/features/meals/presentation/pages/edit_meal_page.dart';
+import 'package:trepi_app/features/meals/presentation/pages/meal_details_page.dart';
+import 'package:trepi_app/features/meals/presentation/pages/meals_page.dart';
 import 'route_names.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -37,6 +40,7 @@ final GoRouter appRouter = GoRouter(
           ]
         ),
         ..._foodSearchBranches,
+        mealBranch,
         StatefulShellBranch(
           routes: [
               GoRoute(
@@ -49,7 +53,6 @@ final GoRouter appRouter = GoRouter(
         ),
       ]
     ),
-    
     GoRoute(
     path: RouteNames.foodDetailsWithParam,
     pageBuilder: (context, state) {
@@ -70,11 +73,10 @@ final GoRouter appRouter = GoRouter(
     final currentAuthState = authBloc.state;
 
     final loggingIn = state.matchedLocation == RouteNames.signIn ||
-                      state.matchedLocation == RouteNames.signUp ||
-                      state.matchedLocation == RouteNames.auth;
-
+                      state.matchedLocation == RouteNames.signUp;
+  
     if (currentAuthState is AuthenticationLoadedState) {
-      if (loggingIn) {
+      if (loggingIn || state.matchedLocation == RouteNames.auth) {
         debugPrint('[Router Redirect] User authenticated, was on auth page, redirecting to home.');
         return RouteNames.home;
       }
@@ -164,3 +166,76 @@ final List<StatefulShellBranch> _foodSearchBranches = [
     ]
   ),
 ];
+
+final StatefulShellBranch mealBranch = 
+StatefulShellBranch(
+  routes: [
+    GoRoute(
+      path: RouteNames.meals,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: MealsPage()
+      ),
+      routes: [
+        GoRoute(
+          path: 'new',
+          pageBuilder: (context, state) {
+            final authState = getIt<AuthenticationBloc>().state;
+            if (authState is! AuthenticationLoadedState) {
+              return const NoTransitionPage(
+                child: Center(child: Text('Please sign in to add meals'))
+              );
+            }
+            final userId = authState.user.uid;
+            return NoTransitionPage(
+              child: EditMealPage(userId: userId, isNewMeal: true)
+            );
+          }
+        ),
+        GoRoute(
+          path: ':mealId',
+          pageBuilder: (context, state) {
+            final mealId = state.pathParameters['mealId'];
+            if (mealId == null) {
+              return const NoTransitionPage(
+                child: MealsPage()
+              );
+            }
+            final authState = getIt<AuthenticationBloc>().state;
+            if (authState is! AuthenticationLoadedState) {
+              return const NoTransitionPage(
+                child: Center(child: Text('Please sign in to view meals'))
+              );
+            }
+            final userId = authState.user.uid;
+            return NoTransitionPage(
+              child: MealDetailsPage(userId: userId, mealId: mealId)
+            );
+          },
+          routes: [
+            GoRoute(
+              path: 'edit',
+              pageBuilder: (context, state) {
+                final mealId = state.pathParameters['mealId'];
+                if (mealId == null) {
+                  return const NoTransitionPage(
+                    child: MealsPage()
+                  );
+                }
+                final authState = getIt<AuthenticationBloc>().state;
+                if (authState is! AuthenticationLoadedState) {
+                  return const NoTransitionPage(
+                    child: Center(child: Text('Please sign in to edit meals'))
+                  );
+                }
+                final userId = authState.user.uid;
+                return NoTransitionPage(
+                  child: EditMealPage(userId: userId, mealId: mealId, isNewMeal: false)
+                );
+              }
+            ),
+          ]
+        )
+      ]
+    )
+  ]
+);

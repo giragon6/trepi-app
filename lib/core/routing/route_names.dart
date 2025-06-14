@@ -11,4 +11,9 @@ class RouteNames {
   static const String foodLookup = '/lookup';
   static const String foodDetails = '/food';
   static const String foodDetailsWithParam = '/food/:fdcId';
+
+  static const String meals = '/meals';
+  static const String addMeal = '/meals/new';
+  static const String mealDetails = '/meals/:mealId';
+  static const String editMeal = '/meals/:mealId/edit';
 }

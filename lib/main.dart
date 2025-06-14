@@ -7,6 +7,8 @@ import 'package:trepi_app/features/authentication/presentation/bloc/auth/authent
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_search/food_search_bloc.dart';
+import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
+import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
 import 'package:trepi_app/firebase_options.dart';
 
 void main() async {
@@ -44,6 +46,12 @@ class MyApp extends StatelessWidget {
         BlocProvider<FoodDetailsBloc>(
           create: (context) => getIt<FoodDetailsBloc>(),
         ),
+        BlocProvider<MealsBloc>(
+          create: (context) => getIt<MealsBloc>(),
+        ),
+        BlocProvider<MealDetailsBloc>(
+          create: (context) => getIt<MealDetailsBloc>(),
+        )
       ],
     child: MaterialApp.router(
       title: 'Trepi App',

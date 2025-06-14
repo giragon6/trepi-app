@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
 import 'package:trepi_app/features/authentication/data/models/user_model.dart';
@@ -8,7 +9,9 @@ import 'package:trepi_app/utils/result.dart';
 class AuthenticationDataSource {
   AuthenticationDataSource();
   
+  // TODO: decouple these
   FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
   Stream<Result<UserModel>> retrieveCurrentUser() {
     return auth.authStateChanges()
@@ -44,13 +47,17 @@ class AuthenticationDataSource {
   }
  
   Future<Result<UserCredential>> signUp(String email, String password, String? displayName, DateTime? dob) async {
-    // TODO: Store date of birth
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
           verifyEmail();
       User? user = userCredential.user;
       if (displayName != null && user != null) user.updateDisplayName(displayName);
+      _firestore.collection('users').doc(user?.uid).set({
+        'email': email,
+        'displayName': displayName ?? 'Anonymous',
+        'dob': dob,
+      });      
       return Result.ok(userCredential);
     } on FirebaseAuthException catch (e) {
       return Result.error(FirebaseAuthException(code: e.code, message: e.message));

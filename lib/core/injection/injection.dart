@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get_it/get_it.dart';
 import 'package:trepi_app/core/config/app_config.dart';
 import 'package:trepi_app/core/network/api_client.dart';
@@ -13,6 +14,13 @@ import 'package:trepi_app/features/food_search/domain/usecases/request_food.dart
 import 'package:trepi_app/features/food_search/domain/usecases/search_food.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_search/food_search_bloc.dart';
+import 'package:trepi_app/features/meals/data/datasources/meal_datasource.dart';
+import 'package:trepi_app/features/meals/data/repositories/meal_repository_impl.dart';
+import 'package:trepi_app/features/meals/domain/repositories/meal_repository.dart';
+import 'package:trepi_app/features/meals/domain/usecases/get_meal_details.dart';
+import 'package:trepi_app/features/meals/domain/usecases/update_meal_details.dart';
+import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
+import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -66,4 +74,29 @@ Future<void> configureDependencies() async {
       getIt<AuthenticationRepository>(),
     )
   );
+
+  getIt.registerLazySingleton<MealRepository>(
+    () => MealRepositoryImpl(getIt<MealDataSource>()),
+  );
+
+  getIt.registerLazySingleton<MealsBloc>(
+    () => MealsBloc(getIt<MealRepository>()),
+  );
+
+  getIt.registerLazySingleton<MealDataSource>(
+    () => MealDataSource(FirebaseFirestore.instance),
+  );
+
+  getIt.registerLazySingleton<GetMealDetails>(
+    () => GetMealDetails(getIt<MealRepository>()),
+  );
+
+  getIt.registerLazySingleton<UpdateMealDetails>(
+    () => UpdateMealDetails(getIt<MealRepository>()),
+  );
+
+  getIt.registerLazySingleton<MealDetailsBloc>(
+    () => MealDetailsBloc(getMealDetails: getIt<GetMealDetails>(), updateMealDetails: getIt<UpdateMealDetails>()),
+  );
+
 }
