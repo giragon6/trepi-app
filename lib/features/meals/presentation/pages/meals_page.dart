@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart'; // For userId
+import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
 
 class MealsPage extends StatefulWidget {
@@ -63,6 +64,13 @@ class _MealsPageState extends State<MealsPage> {
                 return ListTile(
                   title: Text(meal.name),
                   onTap: () {
+                    final authState = context.read<AuthenticationBloc>().state;
+                    if (authState is! AuthenticationLoadedState) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please sign in to view meal details.')),
+                      );
+                      return;
+                    }
                     context.push(
                       '${RouteNames.meals}/${meal.id}',
                       extra: meal,

@@ -24,7 +24,6 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
   void initState() {
     super.initState();
     _foodDetailsBloc = getIt<FoodDetailsBloc>();
-    // Automatically load the food details when page loads
     final fdcId = int.tryParse(widget.fdcId);
     if (fdcId != null) {
       _foodDetailsBloc.add(GetFoodDetailsEvent(fdcId));
@@ -72,11 +71,5 @@ class _FoodDetailsPageState extends State<FoodDetailsPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _foodDetailsBloc.close();
-    super.dispose();
   }
 }

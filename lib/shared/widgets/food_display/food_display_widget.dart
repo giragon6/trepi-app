@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
 import 'package:trepi_app/shared/constants/nutrient_lookup.dart';
 import 'package:trepi_app/shared/widgets/food_display/macro_wheel.dart';
+import 'package:trepi_app/utils/get_nutrient_amount.dart';
 import 'package:trepi_app/utils/result.dart';
 
 class FoodDisplayWidget extends StatelessWidget {
@@ -83,21 +84,20 @@ class FoodDisplayWidget extends StatelessWidget {
   }
 
   Widget _buildMacroWheel() {
+    final proteinGramsResult = getNutrientAmount(1003, foodDetails);
+    final carbGramsResult = getNutrientAmount(1005, foodDetails);
+    final fatGramsResult = getNutrientAmount(1004, foodDetails);
     return MacroWheel(
-      proteinGrams: _getNutrientAmount(1003),
-      carbGrams: _getNutrientAmount(1005),
-      fatGrams: _getNutrientAmount(1004),
+      proteinGrams: proteinGramsResult is Ok<double>
+          ? proteinGramsResult.value
+          : 0.0,
+      carbGrams: carbGramsResult is Ok<double>
+          ? carbGramsResult.value
+          : 0.0,
+      fatGrams: fatGramsResult is Ok<double>
+          ? fatGramsResult.value
+          : 0.0,
     );
-  }
-
-  double _getNutrientAmount(int nutrientId) {
-    try {
-      final nutrient = foodDetails.nutrients
-          .firstWhere((nutrient) => nutrient.nutrientId == nutrientId);
-      return nutrient.amount;
-    } catch (e) {
-      return 0.0; 
-    }
   }
 
   Widget _buildNutrientsSection() {

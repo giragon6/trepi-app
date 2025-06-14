@@ -2,8 +2,34 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:trepi_app/utils/result.dart'; 
 
+enum Macro {
+  protein(1003, 'Protein', 'Protein', 'g'),
+  fat(1004, 'Fat', 'Fat', 'g'),
+  carbohydrate(1005, 'Carbohydrates', 'Carbs', 'g');
+
+  const Macro(this.id, this.name, this.nickname, this.unitName);
+
+  final int id;
+  final String name;
+  final String nickname;
+  final String unitName;
+
+  static Macro? fromId(int id) {
+    try {
+      return Macro.values.firstWhere((macro) => macro.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static String? getName(int id) {
+    return fromId(id)?.name;
+  }
+}
+
 class NutrientLookup {
   static Result<Map<String, dynamic>>? _nutrientResult;
+
   
   static Future<Result<Map<String, dynamic>>> get nutrients async {
     if (_nutrientResult == null) {

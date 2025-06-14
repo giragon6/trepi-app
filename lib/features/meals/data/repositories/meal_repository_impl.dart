@@ -1,4 +1,5 @@
 import 'package:trepi_app/features/meals/data/datasources/meal_datasource.dart';
+import 'package:trepi_app/features/meals/data/models/meal_model.dart';
 import 'package:trepi_app/features/meals/domain/entities/meal.dart';
 import 'package:trepi_app/features/meals/domain/repositories/meal_repository.dart';
 import 'package:trepi_app/utils/result.dart';

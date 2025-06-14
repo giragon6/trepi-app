@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:trepi_app/features/meals/domain/entities/meal_food.dart';
 
-class Meal {
+class Meal extends Equatable {
   final String id;
   String name;
   List<MealFood> foods;
@@ -24,4 +25,18 @@ class Meal {
     this.createdAt,
     this.updatedAt
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        foods,
+        totalGrams,
+        carbGrams,
+        fatGrams,
+        proteinGrams,
+        nutrientProfile,
+        createdAt,
+        updatedAt
+      ];
 }

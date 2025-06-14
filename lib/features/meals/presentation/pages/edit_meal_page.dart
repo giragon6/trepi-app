@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/injection/injection.dart';
+import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/meals/domain/entities/meal.dart';
+import 'package:trepi_app/features/meals/domain/entities/meal_food.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
+import 'package:trepi_app/shared/widgets/food_search/food_search_selectable_widget.dart';
+import 'package:trepi_app/shared/widgets/food_search/food_search_widget.dart';
 
 class EditMealPage extends StatefulWidget {
   final String userId;
@@ -27,12 +31,19 @@ class _EditMealPageState extends State<EditMealPage> {
   late final MealsBloc _mealsBloc;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _totalGramsController = TextEditingController();
-  final _carbGramsController = TextEditingController();
-  final _fatGramsController = TextEditingController();
-  final _proteinGramsController = TextEditingController();
 
-  Meal? _currentMeal;
+  Meal _currentMeal = Meal(
+    id: '',
+    name: '',
+    foods: [],
+    totalGrams: 0.0,
+    carbGrams: 0.0,
+    fatGrams: 0.0,
+    proteinGrams: 0.0,
+    nutrientProfile: {},
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+  );
 
   @override
   void initState() {
@@ -48,36 +59,78 @@ class _EditMealPageState extends State<EditMealPage> {
   @override
   void dispose() {
     _nameController.dispose();
-    _totalGramsController.dispose();
-    _carbGramsController.dispose();
-    _fatGramsController.dispose();
-    _proteinGramsController.dispose();
-    _mealDetailsBloc.close();
     super.dispose();
   }
 
   void _populateForm(Meal meal) {
-    _nameController.text = meal.name;
-    _totalGramsController.text = meal.totalGrams.toString();
-    _carbGramsController.text = meal.carbGrams.toString();
-    _fatGramsController.text = meal.fatGrams.toString();
-    _proteinGramsController.text = meal.proteinGrams.toString();
-    _currentMeal = meal;
+    setState(() {
+      _nameController.text = meal.name;
+      _currentMeal = Meal(
+        id: meal.id,
+        name: meal.name,
+        foods: meal.foods, 
+        totalGrams: meal.totalGrams,
+        carbGrams: meal.carbGrams,
+        fatGrams: meal.fatGrams,
+        proteinGrams: meal.proteinGrams,
+        nutrientProfile: Map.from(meal.nutrientProfile),
+        createdAt: meal.createdAt,
+        updatedAt: meal.updatedAt,
+      );
+    });
+  }
+
+  void _onFoodsSelected(List<MealFood> foods) {
+    setState(() {
+      _currentMeal = Meal(
+        id: _currentMeal.id,
+        name: _currentMeal.name,
+        foods: foods,
+        totalGrams: _currentMeal.totalGrams,
+        carbGrams: _currentMeal.carbGrams,
+        fatGrams: _currentMeal.fatGrams,
+        proteinGrams: _currentMeal.proteinGrams,
+        nutrientProfile: _currentMeal.nutrientProfile,
+        createdAt: _currentMeal.createdAt,
+        updatedAt: _currentMeal.updatedAt,
+      );
+    });
   }
 
   void _submitForm() {
     if (!_formKey.currentState!.validate()) return;
 
+    final currentFoods = _currentMeal.foods;
+    debugPrint('Current Foods: ${currentFoods.toString()}');
+
+    if (currentFoods.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please add at least one food to the meal')),
+      );
+      return;
+    }
+    if (_nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a meal name')),
+      );
+      return;
+    }
+
+    final totalGrams = currentFoods.fold(0.0, (sum, food) => sum + food.quantity);
+    final carbGrams = currentFoods.fold(0.0, (sum, food) => sum + food.carbGrams);
+    final fatGrams = currentFoods.fold(0.0, (sum, food) => sum + food.fatGrams);
+    final proteinGrams = currentFoods.fold(0.0, (sum, food) => sum + food.proteinGrams);
+
     final meal = Meal(
       id: widget.isNewMeal ? '' : widget.mealId!,
       name: _nameController.text.trim(),
-      foods: _currentMeal?.foods ?? [],
-      totalGrams: double.tryParse(_totalGramsController.text) ?? 0.0,
-      carbGrams: double.tryParse(_carbGramsController.text) ?? 0.0,
-      fatGrams: double.tryParse(_fatGramsController.text) ?? 0.0,
-      proteinGrams: double.tryParse(_proteinGramsController.text) ?? 0.0,
-      nutrientProfile: _currentMeal?.nutrientProfile ?? {},
-      createdAt: _currentMeal?.createdAt,
+      foods: currentFoods,
+      totalGrams: totalGrams,
+      carbGrams: carbGrams,
+      fatGrams: fatGrams,
+      proteinGrams: proteinGrams,
+      nutrientProfile: _currentMeal.nutrientProfile,
+      createdAt: _currentMeal.createdAt,
       updatedAt: DateTime.now(),
     );
 
@@ -101,12 +154,13 @@ class _EditMealPageState extends State<EditMealPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
+              onPressed: () => context.pop(),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(dialogContext).pop();
+                context.pop();
+                context.replace(RouteNames.meals);
                 _mealsBloc.add(DeleteMealEvent(widget.userId, widget.mealId!));
               },
               style: ElevatedButton.styleFrom(
@@ -121,6 +175,110 @@ class _EditMealPageState extends State<EditMealPage> {
     );
   }
 
+  Widget _buildFoodSearchWidget() => FoodSearchSelectableWidget(
+    onFoodsSelected: _onFoodsSelected,
+    initialSelectedFoods: _currentMeal.foods,
+  );
+
+  Widget _mealForm(BuildContext context, MealDetailsState detailsState) {
+    return 
+      Form(
+        key: _formKey,
+        child: SingleChildScrollView(child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Card(
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.isNewMeal ? 'Add New Meal' : 'Edit Meal Details',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Meal Name',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a meal name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    _buildFoodSearchWidget(),
+                    const SizedBox(height: 24),
+                    BlocBuilder<MealsBloc, MealsState>(
+                      builder: (context, mealsState) {
+                        final isLoading = mealsState is MealsLoadingState ||
+                            detailsState is MealDetailsLoadingState;
+                        
+                        return ElevatedButton(
+                          onPressed: isLoading ? null : _submitForm,
+                          child: isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                )
+                              : Text(widget.isNewMeal ? 'Add Meal' : 'Update Meal'),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (!widget.isNewMeal) ...[
+              const SizedBox(height: 16),
+              Card(
+                elevation: 2,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Delete Forever?',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Deleting a meal is irreversible.',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: _showDeleteConfirmation,
+                        icon: const Icon(Icons.delete_forever, color: Colors.red),
+                        label: const Text(
+                          'Delete Meal',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ],
+        )),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,12 +286,8 @@ class _EditMealPageState extends State<EditMealPage> {
         title: Text(widget.isNewMeal ? 'Add New Meal' : 'Edit Meal'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-      body: MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: _mealDetailsBloc),
-          BlocProvider.value(value: _mealsBloc),
-        ],
-        child: MultiBlocListener(
+      body:
+        MultiBlocListener(
           listeners: [
             BlocListener<MealDetailsBloc, MealDetailsState>(
               listener: (context, state) {
@@ -178,186 +332,10 @@ class _EditMealPageState extends State<EditMealPage> {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Card(
-                        elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.isNewMeal ? 'Add New Meal' : 'Edit Meal Details',
-                                style: Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              const SizedBox(height: 16),
-                              TextFormField(
-                                controller: _nameController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Meal Name',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter a meal name';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              TextFormField(
-                                controller: _totalGramsController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Total Grams',
-                                  border: OutlineInputBorder(),
-                                  suffixText: 'g',
-                                ),
-                                keyboardType: TextInputType.number,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter total grams';
-                                  }
-                                  if (double.tryParse(value) == null) {
-                                    return 'Please enter a valid number';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _carbGramsController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Carbs',
-                                        border: OutlineInputBorder(),
-                                        suffixText: 'g',
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      validator: (value) {
-                                        if (value != null && value.isNotEmpty &&
-                                            double.tryParse(value) == null) {
-                                          return 'Invalid number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _fatGramsController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Fat',
-                                        border: OutlineInputBorder(),
-                                        suffixText: 'g',
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      validator: (value) {
-                                        if (value != null && value.isNotEmpty &&
-                                            double.tryParse(value) == null) {
-                                          return 'Invalid number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _proteinGramsController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Protein',
-                                        border: OutlineInputBorder(),
-                                        suffixText: 'g',
-                                      ),
-                                      keyboardType: TextInputType.number,
-                                      validator: (value) {
-                                        if (value != null && value.isNotEmpty &&
-                                            double.tryParse(value) == null) {
-                                          return 'Invalid number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 24),
-                              BlocBuilder<MealsBloc, MealsState>(
-                                builder: (context, mealsState) {
-                                  final isLoading = mealsState is MealsLoadingState ||
-                                      detailsState is MealDetailsLoadingState;
-                                  
-                                  return ElevatedButton(
-                                    onPressed: isLoading ? null : _submitForm,
-                                    child: isLoading
-                                        ? const SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(strokeWidth: 2),
-                                          )
-                                        : Text(widget.isNewMeal ? 'Add Meal' : 'Update Meal'),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (!widget.isNewMeal) ...[
-                        const SizedBox(height: 16),
-                        Card(
-                          elevation: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Danger Zone',
-                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Once you delete a meal, there is no going back. Please be certain.',
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                                const SizedBox(height: 12),
-                                OutlinedButton.icon(
-                                  onPressed: _showDeleteConfirmation,
-                                  icon: const Icon(Icons.delete_forever, color: Colors.red),
-                                  label: const Text(
-                                    'Delete Meal',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                  style: OutlinedButton.styleFrom(
-                                    side: const BorderSide(color: Colors.red),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              );
+              return _mealForm(context, detailsState);
             },
           ),
         ),
-      ),
-    );
+      );
   }
 }

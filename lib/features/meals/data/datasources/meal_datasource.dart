@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:trepi_app/features/food_search/data/models/food_model.dart';
 import 'package:trepi_app/features/meals/data/models/meal_food_model.dart';
 import 'package:trepi_app/features/meals/data/models/meal_model.dart';
 import 'package:trepi_app/features/meals/domain/entities/meal.dart';
@@ -9,11 +10,19 @@ class MealDataSource {
 
   MealDataSource(this._firestore);
 
-  Future<Result<void>> addMeal(String userId, Meal meal) async {
+Future<Result<void>> addMeal(String userId, Meal meal) async {
     final mealCollection = _firestore.collection('users').doc(userId).collection('meals');
     try {
       await mealCollection.doc().set({
         'name': meal.name,
+        'foods': meal.foods.map((food) => MealFoodModel(
+          fdcId: food.fdcId, 
+          description: food.description, 
+          quantity: food.quantity, 
+          carbGrams: food.carbGrams, 
+          proteinGrams: food.proteinGrams, 
+          fatGrams: food.fatGrams,
+        ).toJson()).toList(),
         'totalGrams': meal.totalGrams,
         'carbGrams': meal.carbGrams,
         'fatGrams': meal.fatGrams,
@@ -27,12 +36,20 @@ class MealDataSource {
       return Result.error(Exception('Failed to add meal: $e'));
     }
   }
-
+  
   Future<Result<void>> updateMeal(String userId, Meal meal) async {
     final mealCollection = _firestore.collection('users').doc(userId).collection('meals');
     try {
       await mealCollection.doc(meal.id).update({
         'name': meal.name,
+        'foods': meal.foods.map((food) => MealFoodModel(
+          fdcId: food.fdcId, 
+          description: food.description, 
+          quantity: food.quantity, 
+          carbGrams: food.carbGrams, 
+          proteinGrams: food.proteinGrams, 
+          fatGrams: food.fatGrams,
+        ).toJson()).toList(),
         'totalGrams': meal.totalGrams,
         'carbGrams': meal.carbGrams,
         'fatGrams': meal.fatGrams,
@@ -79,7 +96,7 @@ class MealDataSource {
       }
       final data = doc.data()!;
       final meal = Meal(
-        id: doc.id as String,
+        id: doc.id,
         name: data['name'] as String,
         foods: (data['foods'] as List<dynamic>?)
             ?.map((food) => MealFoodModel.fromJson(food as Map<String, dynamic>))
@@ -96,5 +113,4 @@ class MealDataSource {
     } catch (e) {
       return Result.error(Exception('Failed to fetch meal by ID: $e'));
     }
-  }
-}
+  }}  

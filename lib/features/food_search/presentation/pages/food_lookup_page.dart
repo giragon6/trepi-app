@@ -78,7 +78,6 @@ class _FoodLookupPageState extends State<FoodLookupPage> {
 
   @override
   void dispose() {
-    _foodBloc.close(); 
     _controller.dispose();
     super.dispose();
   }
