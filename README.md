@@ -9,11 +9,12 @@ Stack:
 
 CURRENTLY IMPLEMENTED:
 - FDC food data search by ID
+- FDC food data search by name
+- Meal builder and display
 
 COMING SOON:
-- FDC food data search by name, category, etc.
+- FDC food data search by category, brand name, etc.
 - Save custom foods
-- Meal builder and tracker
 - Grocery route planner
 - Mobile deployment on Android and Apple
 - Prettier UI
