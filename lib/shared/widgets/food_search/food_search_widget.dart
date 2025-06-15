@@ -25,8 +25,8 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _foodSearchBloc,
+    return BlocProvider<FoodSearchBloc>(
+      create: (context) => _foodSearchBloc,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -60,21 +60,24 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
                   if (state is FoodSearchLoadingState) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  if (state is FoodSearchLoadedState) {
-                    return SingleChildScrollView(child: Column(
+                                    if (state is FoodSearchLoadedState) {
+                    return Column(
                       children: [
-                        Expanded(child: ListView.builder(
-                      itemCount: state.foodResults.length,
-                      itemBuilder: (context, index) {
-                        final food = state.foodResults[index];
-                        return FoodSnippetWidget(
-                          foodName: food.itemDescription,
-                          fdcId: food.fdcId.toString(),
-                        );
-                      },
-                        )),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: state.foodResults.length,
+                            itemBuilder: (context, index) {
+                              final food = state.foodResults[index];
+                              return FoodSnippetWidget(
+                                foodName: food.itemDescription,
+                                fdcId: food.fdcId.toString(),
+                              );
+                            },
+                          ),
+                        ),
                         const SizedBox(height: 16),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             ElevatedButton(
                               onPressed: state.isFirstPage ? null : () {
@@ -83,6 +86,7 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
                               }, 
                               child: const Icon(Icons.arrow_back, size: 24),
                             ),
+                            Text('Page ${state.pageNumber}'),
                             ElevatedButton(
                               onPressed: state.isLastPage ? null : () {
                                 final name = _controller.text.trim();
@@ -90,9 +94,10 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
                               },
                               child: const Icon(Icons.arrow_forward, size: 24),
                             ),
-                          ]  
-                        )
-                ]));
+                          ],
+                        ),
+                      ],
+                    );
                   }
                   if (state is FoodSearchErrorState) {
                     return Center(child: Text('Error: ${state.error}'));
