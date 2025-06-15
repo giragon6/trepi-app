@@ -156,7 +156,7 @@ class _PasswordField extends StatelessWidget {
               labelText: 'Password',
               errorMaxLines: 2,
               errorText: !state.isPasswordValid
-                  ? 'Password must be at least 8 characters and contain at least one letter and number'
+                  ? 'Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.'
                   : null,
             ),
             onChanged: (value) {

@@ -49,7 +49,7 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
   );
 
   final RegExp _passwordRegExp = RegExp(
-    r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
+    r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[_#?!@$%^&*-]).{8,}$',
   );
 
   bool _isEmailValid(String email) {
@@ -162,7 +162,6 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
           emit(state.copyWith(
               isLoading: false, errorMessage: result.error.toString(), isFormValid: false));
           debugPrint("Sign up failed: ${result.error}");
-
       }
     } else {
       emit(state.copyWith(
@@ -177,9 +176,11 @@ class FormBloc extends Bloc<FormEvent, FormsValidate> {
             _isPasswordValid(state.password) && _isEmailValid(state.email),
         isLoading: true));
     if (state.isFormValid) {
+      debugPrint("Form is valid, attempting sign in");
       try {
-        Result<UserCredential> result = await _authenticationRepository.signInWithEmailAndPassword(authInfo.email, authInfo.password);
         emit(state.copyWith(isLoading: true, isFormValidateFailed: false, errorMessage: ""));
+        Result<UserCredential> result = await _authenticationRepository.signInWithEmailAndPassword(authInfo.email, authInfo.password);
+        debugPrint("Sign in result: $result");
         switch (result) {
           case Ok():
             emit(state.copyWith(isFormSuccessful: true, isLoading: false));
