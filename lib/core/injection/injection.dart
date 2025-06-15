@@ -5,8 +5,10 @@ import 'package:trepi_app/core/network/api_client.dart';
 import 'package:trepi_app/features/authentication/data/datasources/authentication_data_source.dart';
 import 'package:trepi_app/features/authentication/data/repositories/authentication_repository_impl.dart';
 import 'package:trepi_app/features/authentication/domain/repositories/authentication_repository.dart';
+import 'package:trepi_app/features/authentication/domain/usecases/verify_email.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
+import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
 import 'package:trepi_app/features/food_search/data/datasources/food_data_source.dart';
 import 'package:trepi_app/features/food_search/data/repositories/food_repository_impl.dart';
 import 'package:trepi_app/features/food_search/domain/repositories/food_repository.dart';
@@ -99,4 +101,11 @@ Future<void> configureDependencies() async {
     () => MealDetailsBloc(getMealDetails: getIt<GetMealDetails>(), updateMealDetails: getIt<UpdateMealDetails>()),
   );
 
+  getIt.registerLazySingleton<VerifyEmail>(
+    () => VerifyEmail(getIt<AuthenticationRepository>()),
+  );
+
+  getIt.registerLazySingleton<EmailVerificationBloc>(
+    () => EmailVerificationBloc(verifyEmail: getIt<VerifyEmail>()),
+  );
 }

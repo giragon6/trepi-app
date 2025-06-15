@@ -49,11 +49,6 @@ class AdaptiveScaffold extends StatelessWidget {
       icon: Icon(Icons.restaurant_menu),
       location: RouteNames.meals,
     ),
-    AdaptiveScaffoldDestination(
-      label: 'Profile',
-      icon: Icon(Icons.person_2), // Placeholder for AuthImageWidget
-      location: RouteNames.profile,
-    ),
   ];
 
   const AdaptiveScaffold({

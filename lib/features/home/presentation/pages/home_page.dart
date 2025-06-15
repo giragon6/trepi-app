@@ -4,11 +4,24 @@ import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/authentication/domain/entities/user_entity.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
+import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
-  
-  final String title = 'Trepi App';
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final String title = 'Home Page';
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthenticationBloc>().add(RefreshUserEvent());
+    context.read<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +30,9 @@ class HomePage extends StatelessWidget {
         switch (authState) {
           case AuthenticationSignedOutState(): 
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.pushReplacement(RouteNames.signIn);
+              if (context.mounted) {
+                context.pushReplacement(RouteNames.signIn);
+              }
             });
             return Scaffold(
               body: Center(
@@ -49,81 +64,110 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildHomeContent(BuildContext context, UserEntity user) {
-    return Center(
+  Widget _buildEmailNotVerifiedContent(BuildContext context, UserEntity user, bool emailSent) {
+    return 
+    Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade100,
+        border: Border.all(color: Colors.orange),
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            'Welcome, ${user.displayName}!',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          const Icon(Icons.warning, color: Colors.orange, size: 48),
+          const SizedBox(height: 8),
+          const Text(
+            'Please verify your email',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 8),
+          Text(emailSent ? 'Check your inbox for a verification link.' : 'Click the button below to send a verification email.'),
           const SizedBox(height: 16),
-          
-          // Email verification status
-          if (!user.isEmailVerified) ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade100,
-                border: Border.all(color: Colors.orange),
-                borderRadius: BorderRadius.circular(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              () {
+                if (!emailSent) {
+                return ElevatedButton(
+                onPressed: () {
+                  context.read<EmailVerificationBloc>().add(EmailVerificationRequestedEvent());
+                },
+                child: Text(emailSent ? 'Resend Email' : 'Send Verification Email'),);
+              } else {
+                return SizedBox.shrink();
+              }
+              }(),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
+                },
+                child: const Text('I\'ve Verified'),
               ),
-              child: Column(
-                children: [
-                  const Icon(Icons.warning, color: Colors.orange, size: 48),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Please verify your email',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text('Check your inbox for a verification link.'),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthenticationBloc>().add(ResendVerificationEvent());
-                        },
-                        child: const Text('Resend Email'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthenticationBloc>().add(RefreshUserEvent());
-                        },
-                        child: const Text('I\'ve Verified'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ] else ...[
-            Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                border: Border.all(color: Colors.green),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.verified, color: Colors.green, size: 24),
-                  SizedBox(width: 8),
-                  Text(
-                    'Email verified ✓',
-                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildEmailVerifiedContent() =>    
+    Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.green.shade100,
+        border: Border.all(color: Colors.green),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.verified, color: Colors.green, size: 24),
+          SizedBox(width: 8),
+          Text(
+            'Email verified ✓',
+            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+
+  Widget _buildHomeContent(BuildContext context, UserEntity user) {
+    return Scaffold(
+        body: Column(
+        children: [
+          Text(
+            user.displayName.isNotEmpty ? 'Welcome, ${user.displayName}!' : 'Welcome!',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          BlocBuilder<EmailVerificationBloc, EmailVerificationState>(
+            builder: (context, verifState) {
+              debugPrint('EmailVerificationBloc state: $verifState');
+              switch (verifState) {
+                case EmailVerificationLoadingState():
+                  return const CircularProgressIndicator();              
+
+                case EmailSentState():
+                  return _buildEmailNotVerifiedContent(context, user, true);
+                
+                case EmailNotVerifiedState():
+                  return _buildEmailNotVerifiedContent(context, user, false);
+
+                case EmailVerifiedState():
+                  return _buildEmailVerifiedContent();
+
+                case EmailVerificationErrorState():
+                  return Center(
+                    child: Text('Error verifying email: ${verifState.error}'),
+                  );
+
+                default:
+                  return const SizedBox.shrink();
+              }
+            }
+          ),]          
+    ));
   }
 }

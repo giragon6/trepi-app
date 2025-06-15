@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
+import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
+
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -31,18 +33,6 @@ class SignUpPage extends StatelessWidget {
               }
             },
           ),
-          BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, state) {
-              if (state is AuthenticationLoadedState) {
-                debugPrint('User authenticated, navigating to home');
-                if (context.mounted) {
-                  context.pushReplacement(RouteNames.home);
-                }
-              } else if (state is AuthenticationErrorState) {
-                debugPrint('Authentication failed: ${state.errorMessage}');
-              }
-            },
-          ), 
         ],
         child: Scaffold(
             backgroundColor: Colors.white,
@@ -52,13 +42,15 @@ class SignUpPage extends StatelessWidget {
   }
 }
 
+
 class _SignUpForm extends StatelessWidget {
   const _SignUpForm();
+
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+   
     return Center(
       child: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: size.width * 0.1),
@@ -99,8 +91,10 @@ class _SignUpForm extends StatelessWidget {
   }
 }
 
+
 class _EmailField extends StatelessWidget {
   const _EmailField({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -134,8 +128,10 @@ class _EmailField extends StatelessWidget {
   }
 }
 
+
 class _PasswordField extends StatelessWidget {
   const _PasswordField({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,7 +152,7 @@ class _PasswordField extends StatelessWidget {
               labelText: 'Password',
               errorMaxLines: 2,
               errorText: !state.isPasswordValid
-                  ? 'Password must be at least 8 characters, include an uppercase letter, a lowercase letter, a number, and a special character.'
+                  ? 'Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
                   : null,
             ),
             onChanged: (value) {
@@ -169,8 +165,10 @@ class _PasswordField extends StatelessWidget {
   }
 }
 
+
 class _DisplayNameField extends StatelessWidget {
   const _DisplayNameField({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -202,8 +200,10 @@ class _DisplayNameField extends StatelessWidget {
   }
 }
 
+
 class _DobField extends StatelessWidget {
   const _DobField({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -221,11 +221,11 @@ class _DobField extends StatelessWidget {
               labelText: 'Date of Birth',
               hintText: 'Select your date of birth',
               suffixIcon: const Icon(Icons.calendar_today),
-              errorText: !state.isAgeValid 
-                ? 'Please select a valid date of birth' 
+              errorText: !state.isAgeValid
+                ? 'Please select a valid date of birth'
                 : null,
               contentPadding: const EdgeInsets.symmetric(
-                vertical: 15.0, 
+                vertical: 15.0,
                 horizontal: 10.0
               ),
               border: OutlineInputBorder(
@@ -239,7 +239,7 @@ class _DobField extends StatelessWidget {
                 firstDate: DateTime(1900),
                 lastDate: DateTime.now(),
               );
-              
+             
               if (pickedDate != null) {
                 context.read<FormBloc>().add(DobChangedEvent(pickedDate));
               }
@@ -251,8 +251,10 @@ class _DobField extends StatelessWidget {
   }
 }
 
+
 class _SubmitButton extends StatelessWidget {
   const _SubmitButton({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -262,11 +264,14 @@ class _SubmitButton extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
+
         return SizedBox(
           width: MediaQuery.of(context).size.width * 0.8,
           height: 50,
           child: ElevatedButton(
-            onPressed: () => context.read<FormBloc>().add(const FormSubmittedEvent(value: Status.signUp)),
+            onPressed: () {
+              context.read<FormBloc>().add(const FormSubmittedEvent(value: Status.signUp));
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
@@ -285,9 +290,11 @@ class _SubmitButton extends StatelessWidget {
   }
 }
 
+
 class ErrorDialog extends StatelessWidget {
   final String? errorMessage;
   const ErrorDialog({Key? key, required this.errorMessage}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -303,3 +310,4 @@ class ErrorDialog extends StatelessWidget {
     );
   }
 }
+

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
-import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
 
 class SignInPage extends StatelessWidget {
@@ -31,18 +30,6 @@ class SignInPage extends StatelessWidget {
               }
             },
           ),
-          BlocListener<AuthenticationBloc, AuthenticationState>(
-            listener: (context, state) {
-              if (state is AuthenticationLoadedState) {
-                debugPrint('User authenticated, navigating to home');
-                if (context.mounted) {
-                  context.pushReplacement(RouteNames.home);
-                }
-              } else if (state is AuthenticationErrorState) {
-                debugPrint('Authentication failed: ${state.errorMessage}');
-              }
-            },
-          ), 
         ],
         child: Scaffold(
             backgroundColor: Colors.white,

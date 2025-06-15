@@ -41,26 +41,25 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     if (userCredential == null) {
       return Result.error(Exception('Sign in failed'));
     }
-    return Result.ok(userCredential);
+    return userCredential;
   }
 
   @override
   Future<Result<void>> verifyEmail() async {
-    try {
-      await _dataSource.verifyEmail();
-      return Result.ok(null);
-    } catch (e) {
-      return Result.error(Exception('Email verification failed: $e'));
-    }
+    return await _dataSource.verifyEmail();
   }
 
   @override
-  Future<Result<void>> refreshCurrentUser() async {
+  Future<Result<void>> refreshCurrentUser() async { // TODO: make datasource return Result
     try {
       await _dataSource.refreshCurrentUser();
       return Result.ok(null);
     } catch (e) {
       return Result.error(Exception('User refresh failed: $e'));
     }
+  }
+
+  Future<Result<bool>> checkEmailVerificationStatus() async {
+    return await _dataSource.checkEmailVerificationStatus();
   }
 }

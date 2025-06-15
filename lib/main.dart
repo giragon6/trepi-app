@@ -5,6 +5,7 @@ import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/core/routing/app_router.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
+import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_search/food_search_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
@@ -51,14 +52,19 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<MealDetailsBloc>(
           create: (context) => getIt<MealDetailsBloc>(),
-        )
+        ),
+        BlocProvider<EmailVerificationBloc>(
+          create: (context) => getIt<EmailVerificationBloc>(),
+        ),
+        
       ],
-    child: MaterialApp.router(
-      title: 'Trepi App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      child: MaterialApp.router(
+        title: 'Trepi App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        routerConfig: appRouter,
       ),
-      routerConfig: appRouter,
-    ));
+    );
   }
 }

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 // import 'package:flutter/material.dart';
 import 'package:trepi_app/features/authentication/data/models/user_model.dart';
 import 'package:trepi_app/utils/result.dart';
@@ -37,7 +39,6 @@ class AuthenticationDataSource {
   StreamTransformer<User?, User?> _mainThreadTransformer() {
     return StreamTransformer<User?, User?>.fromHandlers(
       handleData: (User? user, EventSink<User?> sink) {
-        // Ensure we're on the main thread
         scheduleMicrotask(() => sink.add(user));
       },
       handleError: (error, stackTrace, EventSink<User?> sink) {
@@ -50,44 +51,70 @@ class AuthenticationDataSource {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-          verifyEmail();
       User? user = userCredential.user;
-      if (displayName != null && user != null) user.updateDisplayName(displayName);
-      _firestore.collection('users').doc(user?.uid).set({
+      if (displayName != null && user != null) await user.updateDisplayName(displayName);
+      await _firestore.collection('users').doc(user?.uid).set({
         'email': email,
         'displayName': displayName ?? 'Anonymous',
         'dob': dob,
-      });      
+      });
       return Result.ok(userCredential);
+    } on PlatformException catch (e) {
+      return Result.error(Exception('Firebase error during sign up: $e'));
     } on FirebaseAuthException catch (e) {
-      return Result.error(FirebaseAuthException(code: e.code, message: e.message));
+      if (e.code == 'weak-password') {
+        return Result.error(Exception('The password provided is too weak.'));
+      } else if (e.code == 'email-already-in-use') {
+        return Result.error(Exception('The account already exists for that email.'));
+      } else {
+        return Result.error(Exception('Sign up failed: ${e.message}'));
+      }
+
     } catch (e) {
       return Result.error(Exception('Sign up failed: $e'));
     }
   }
- 
-  Future<UserCredential?> signInWithEmailAndPassword(String email, String password) async {
+  Future<Result<UserCredential>> signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      throw FirebaseAuthException(code: e.code, message: e.message);
+      return Result.ok(userCredential);
+    } catch (e) {
+      return Result.error(Exception('Sign in failed: $e'));
     }
   }
  
-  Future<void> verifyEmail() async {
+  Future<Result<void>> verifyEmail() async {
     User? user = FirebaseAuth.instance.currentUser;
-    // debugPrint('User is verified?: ${user != null ? user.emailVerified : 'No user'}');
-    if (user != null && !user.emailVerified) {
-      return await user.sendEmailVerification();
+
+    try {
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+        return Result.ok(null);
+      }
+    } catch (e) {
+      return Result.error(Exception('Failed to send verification email: $e'));
     }
+    return Result.error(Exception('No user signed in or email already verified'));
   }
 
   Future<void> refreshCurrentUser() async {
     final User? user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await user.reload();
+    }
+  }
+
+  Future<Result<bool>> checkEmailVerificationStatus() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        await user.reload();
+        return Result.ok(user.emailVerified);
+      }
+      return Result.error(Exception('No user signed in'));
+    } catch (e) {
+      return Result.error(Exception('Failed to check email verification: $e'));
     }
   }
  

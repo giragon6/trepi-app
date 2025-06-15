@@ -10,4 +10,5 @@ abstract class AuthenticationRepository {
   Future<Result<void>> signOut();
   Future<Result<void>> refreshCurrentUser();
   Future<Result<void>> verifyEmail();
+  Future<Result<bool>> checkEmailVerificationStatus();
 }
