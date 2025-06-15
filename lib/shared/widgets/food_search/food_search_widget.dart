@@ -54,13 +54,15 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
               child: BlocBuilder<FoodSearchBloc, FoodSearchState>(
                 bloc: _foodSearchBloc, 
                 builder: (context, state) {
-                  if (state is FoodSearchInitialState) {
+                  debugPrint('Current FoodSearchState: $state');
+                  switch (state) {
+                  case FoodSearchInitialState():
                     return const Center(child: Text('Enter a food name to search the FDC database'));
-                  }
-                  if (state is FoodSearchLoadingState) {
+
+                  case FoodSearchLoadingState():
                     return const Center(child: CircularProgressIndicator());
-                  }
-                                    if (state is FoodSearchLoadedState) {
+
+                  case FoodSearchLoadedState():
                     return Column(
                       children: [
                         Expanded(
@@ -98,11 +100,14 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
                         ),
                       ],
                     );
-                  }
-                  if (state is FoodSearchErrorState) {
+
+                  case FoodSearchErrorState():
                     return Center(child: Text('Error: ${state.error}'));
+
+                  default:
+                    debugPrint('Unknown FoodSearchState: $state');
+                    return const SizedBox.shrink();
                   }
-                  return const SizedBox.shrink();
                 },
               ),
             ),
