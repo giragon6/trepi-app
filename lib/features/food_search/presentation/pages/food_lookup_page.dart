@@ -29,6 +29,10 @@ class _FoodLookupPageState extends State<FoodLookupPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            const Text(
+              'NEST (the backend host for trepi) IS DOWN for reasons out of my control! Please do not review until it is back online :)',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             TextField(
               controller: _controller,
               decoration: const InputDecoration(
