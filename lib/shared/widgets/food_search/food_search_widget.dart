@@ -41,7 +41,7 @@ class _FoodSearchWidgetState extends State<FoodSearchWidget> {
                 labelText: 'Enter food name',
                 border: OutlineInputBorder(),
               ),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.text,
             )),
             const SizedBox(height: 16),
             ElevatedButton(
