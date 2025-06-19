@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart'; // For userId
-import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
 
 class MealsPage extends StatefulWidget {

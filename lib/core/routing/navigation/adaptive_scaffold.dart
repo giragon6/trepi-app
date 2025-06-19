@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/navigation/scaffold_with_navigation_bar.dart';
 import 'package:trepi_app/core/routing/navigation/scaffold_with_navigation_rail.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
-import 'package:trepi_app/features/authentication/presentation/widgets/auth_image_widget.dart';
+import 'package:trepi_app/features/authentication/presentation/widgets/auth_image/auth_image_widget.dart';
 
 enum ScreenSize {
   small(pixels: 0),

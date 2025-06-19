@@ -54,7 +54,10 @@ class MyApp extends StatelessWidget {
           create: (context) => getIt<MealDetailsBloc>(),
         ),
         BlocProvider<EmailVerificationBloc>(
-          create: (context) => getIt<EmailVerificationBloc>(),
+          create: (context) {
+            getIt<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
+            return getIt<EmailVerificationBloc>();
+          },
         ),
         
       ],

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter/material.dart';
 import 'package:trepi_app/features/authentication/data/models/user_model.dart';
@@ -108,8 +108,9 @@ class AuthenticationDataSource {
   Future<Result<bool>> checkEmailVerificationStatus() async {
     try {
       User? user = FirebaseAuth.instance.currentUser;
+      await refreshCurrentUser(); 
+      user = FirebaseAuth.instance.currentUser; 
       if (user != null) {
-        await user.reload();
         return Result.ok(user.emailVerified);
       }
       return Result.error(Exception('No user signed in'));

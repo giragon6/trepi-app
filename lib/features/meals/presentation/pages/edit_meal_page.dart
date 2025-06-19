@@ -8,7 +8,6 @@ import 'package:trepi_app/features/meals/domain/entities/meal_food.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
 import 'package:trepi_app/shared/widgets/food_search/food_search_selectable_widget.dart';
-import 'package:trepi_app/shared/widgets/food_search/food_search_widget.dart';
 
 class EditMealPage extends StatefulWidget {
   final String userId;

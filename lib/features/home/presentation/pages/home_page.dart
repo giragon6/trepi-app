@@ -5,6 +5,9 @@ import 'package:trepi_app/core/routing/route_names.dart';
 import 'package:trepi_app/features/authentication/domain/entities/user_entity.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
+import 'package:trepi_app/features/authentication/presentation/widgets/email_verification/email_not_verified_widget.dart';
+import 'package:trepi_app/features/authentication/presentation/widgets/email_verification/email_sent_widget.dart';
+import 'package:trepi_app/features/authentication/presentation/widgets/email_verification/email_verified_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,25 +18,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final String title = 'Home Page';
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<AuthenticationBloc>().add(RefreshUserEvent());
-    context.read<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+    return BlocConsumer<AuthenticationBloc, AuthenticationState>(
+      listener: (context, authState) {
+        if (authState is AuthenticationSignedOutState) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (context.mounted) {
+              context.pushReplacement(RouteNames.signIn);
+            }
+          });
+        }
+      },
       builder: (context, authState) {
         switch (authState) {
           case AuthenticationSignedOutState(): 
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (context.mounted) {
-                context.pushReplacement(RouteNames.signIn);
-              }
-            });
             return Scaffold(
               body: Center(
                 child: Text('You are signed out. Redirecting to sign-in page...'),
@@ -64,75 +64,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildEmailNotVerifiedContent(BuildContext context, UserEntity user, bool emailSent) {
-    return 
-    Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade100,
-        border: Border.all(color: Colors.orange),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.warning, color: Colors.orange, size: 48),
-          const SizedBox(height: 8),
-          const Text(
-            'Please verify your email',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(emailSent ? 'Check your inbox for a verification link.' : 'Click the button below to send a verification email.'),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              () {
-                if (!emailSent) {
-                return ElevatedButton(
-                onPressed: () {
-                  context.read<EmailVerificationBloc>().add(EmailVerificationRequestedEvent());
-                },
-                child: Text(emailSent ? 'Resend Email' : 'Send Verification Email'),);
-              } else {
-                return SizedBox.shrink();
-              }
-              }(),
-              ElevatedButton(
-                onPressed: () {
-                  context.read<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
-                },
-                child: const Text('I\'ve Verified'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmailVerifiedContent() =>    
-    Container(
-      padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.green.shade100,
-        border: Border.all(color: Colors.green),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Row(
-        children: [
-          Icon(Icons.verified, color: Colors.green, size: 24),
-          SizedBox(width: 8),
-          Text(
-            'Email verified ✓',
-            style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-          ),
-        ],
-      ),
-    );
-
   Widget _buildHomeContent(BuildContext context, UserEntity user) {
     return Scaffold(
         body: Column(
@@ -147,16 +78,27 @@ class _HomePageState extends State<HomePage> {
               debugPrint('EmailVerificationBloc state: $verifState');
               switch (verifState) {
                 case EmailVerificationLoadingState():
-                  return const CircularProgressIndicator();              
-
+                  return const CircularProgressIndicator();  
+                              
                 case EmailSentState():
-                  return _buildEmailNotVerifiedContent(context, user, true);
+                  return EmailSentWidget(
+                    onRefreshButtonPressed: () {
+                      context.read<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
+                    }
+                  );
                 
                 case EmailNotVerifiedState():
-                  return _buildEmailNotVerifiedContent(context, user, false);
+                  return EmailNotVerifiedWidget(
+                    onRequestButtonPressed: () {
+                      context.read<EmailVerificationBloc>().add(EmailVerificationRequestedEvent());
+                    },
+                    onRefreshButtonPressed: () {
+                      context.read<EmailVerificationBloc>().add(EmailVerificationCheckEvent());
+                    },
+                  );
 
                 case EmailVerifiedState():
-                  return _buildEmailVerifiedContent();
+                  return EmailVerifiedWidget();
 
                 case EmailVerificationErrorState():
                   return Center(
