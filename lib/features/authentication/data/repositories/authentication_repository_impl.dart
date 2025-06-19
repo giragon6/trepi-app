@@ -37,11 +37,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
   
   @override
   Future<Result<UserCredential>> signInWithEmailAndPassword(String email, String password) async {
-    final userCredential = await _dataSource.signInWithEmailAndPassword(email, password);
-    if (userCredential == null) {
-      return Result.error(Exception('Sign in failed'));
-    }
-    return userCredential;
+    return await _dataSource.signInWithEmailAndPassword(email, password);
   }
 
   @override

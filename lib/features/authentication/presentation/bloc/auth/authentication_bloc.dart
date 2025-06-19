@@ -20,6 +20,8 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
     
     on<SignOutEvent>(_onSignOut);
     on<LoadAuthenticationEvent>(_onLoadAuthentication);
+    on<LoadedAuthenticationEvent>(_onLoadedAuthentication);
+    on<AuthenticationErrorEvent>(_onAuthenticationError);
     on<RefreshUserEvent>(_onRefreshUser);
     on<ResendVerificationEvent>(_onResendVerification);
   }
@@ -31,15 +33,15 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
           case Ok():
             final user = result.value;
             if (user.uid.isNotEmpty) {
-              emit(AuthenticationLoadedState(user));
+              add(LoadedAuthenticationEvent(user));
             } else {
-              emit(AuthenticationErrorState('User not found'));
+              add(AuthenticationErrorEvent('User not found'));
             }
           case Error():
             if (result.error.toString().contains('No user signed in')) {
-              emit(AuthenticationSignedOutState());
+              add(SignOutEvent());
             } else {
-              emit(AuthenticationErrorState(result.error.toString()));
+              add(AuthenticationErrorEvent(result.error.toString()));
             }
         }
       },
@@ -57,6 +59,14 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
 
   Future<void> _onLoadAuthentication(LoadAuthenticationEvent event, Emitter<AuthenticationState> emit) async {
     emit(AuthenticationLoadingState(isLoading: true));
+  }
+
+  Future<void> _onLoadedAuthentication(LoadedAuthenticationEvent event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationLoadedState(event.user));
+  }
+
+  Future<void> _onAuthenticationError(AuthenticationErrorEvent event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationErrorState(event.errorMessage));
   }
 
   Future<void> _onRefreshUser(RefreshUserEvent event, Emitter<AuthenticationState> emit) async {

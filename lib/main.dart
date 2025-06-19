@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,9 +23,14 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // if (const bool.fromEnvironment('dart.vm.product') == false) {
-  //   await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  // }
+  if (const bool.fromEnvironment('dart.vm.product') == false) {
+    try {
+     FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+   } catch (e) {
+     debugPrint(e.toString());
+   }
+  }
   
   runApp(const MyApp());
 }
