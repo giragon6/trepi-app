@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trepi_app/core/styles/trepi_color.dart';
 
 class EmailSentWidget extends StatelessWidget {
   final Function onRefreshButtonPressed;
@@ -15,12 +16,12 @@ class EmailSentWidget extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.orange.shade100,
-        border: Border.all(color: Colors.orange),
+        border: Border.all(color: TrepiColor.orange),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         children: [
-          const Icon(Icons.warning, color: Colors.orange, size: 48),
+          const Icon(Icons.warning, color: TrepiColor.orange, size: 48),
           const SizedBox(height: 8),
           const Text(
             'Please verify your email',
@@ -37,8 +38,8 @@ class EmailSentWidget extends StatelessWidget {
                 onPressed: () {
                   onRefreshButtonPressed();
                 },
-                child: const Text('I\'ve Verified'),
-              ),
+                child: const Text('I\'ve Verified', style: TextStyle(fontSize: 14, color: Colors.black),
+              )),
             ],
           ),
         ],

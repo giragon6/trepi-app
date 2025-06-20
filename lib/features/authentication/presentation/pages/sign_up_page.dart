@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:trepi_app/core/routing/route_names.dart';
-import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
+import 'package:trepi_app/core/styles/trepi_color.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
-import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
 
 
 class SignUpPage extends StatelessWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({super.key});
  
   @override
   Widget build(BuildContext context) {
@@ -81,7 +80,7 @@ class _SignUpForm extends StatelessWidget {
               onPressed: () => context.push(RouteNames.signIn),
               child: const Text(
                 'Already have an account? Sign In',
-                style: TextStyle(color: Colors.blue),
+                style: TextStyle(color: TrepiColor.orange, fontSize: 16),
               ),
             ),
           ],
@@ -114,7 +113,6 @@ class _EmailField extends StatelessWidget {
                 errorText: !state.isEmailValid
                     ? 'Please enter a valid email address'
                     : null,
-                hintText: 'Email',
                 contentPadding: const EdgeInsets.symmetric(
                     vertical: 15.0, horizontal: 10.0),
                 border: OutlineInputBorder(
@@ -253,7 +251,7 @@ class _DobField extends StatelessWidget {
 
 
 class _SubmitButton extends StatelessWidget {
-  const _SubmitButton({Key? key}) : super(key: key);
+  const _SubmitButton();
 
 
   @override
@@ -273,7 +271,7 @@ class _SubmitButton extends StatelessWidget {
               context.read<FormBloc>().add(const FormSubmittedEvent(value: Status.signUp));
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
+              backgroundColor: TrepiColor.orange,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),

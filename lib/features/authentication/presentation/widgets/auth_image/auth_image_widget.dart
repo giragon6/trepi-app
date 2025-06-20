@@ -2,21 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 
-class AuthImageWidget extends StatelessWidget {
-  void Function() _onPressed;
+class AuthImageWidget extends StatefulWidget {
+  final void Function() _onPressed;
   
-  AuthImageWidget({
+  const AuthImageWidget({
     super.key,
     required void Function() onPressed,
   }) : _onPressed = onPressed;  
 
+  @override
+  State<AuthImageWidget> createState() => _AuthImageWidgetState();
+}
+
+class _AuthImageWidgetState extends State<AuthImageWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, authState) {
         const radius = 20.0;
         return TextButton(
-          onPressed: _onPressed,
+          onPressed: widget._onPressed,
           style: TextButton.styleFrom(
             shape: const CircleBorder(),
             padding: EdgeInsets.zero,

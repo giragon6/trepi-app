@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trepi_app/core/styles/trepi_color.dart';
 
 class EmailNotVerifiedWidget extends StatelessWidget {
   final Function onRequestButtonPressed;
@@ -22,7 +23,7 @@ class EmailNotVerifiedWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(Icons.warning, color: Colors.orange, size: 48),
+          const Icon(Icons.warning, color: TrepiColor.orange, size: 48),
           const SizedBox(height: 8),
           const Text(
             'Please verify your email',
@@ -38,13 +39,13 @@ class EmailNotVerifiedWidget extends StatelessWidget {
                 onPressed: () {
                   onRequestButtonPressed();
                 },
-                child: Text('Send Verification Email'),
+                child: Text('Send Verification Email', style: TextStyle(fontSize: 14, color: Colors.black)),
               ),
               ElevatedButton(
                 onPressed: () {
                   onRefreshButtonPressed();
                 },
-                child: const Text('I\'ve Verified'),
+                child: const Text('I\'ve Verified', style: TextStyle(fontSize: 14, color: TrepiColor.brown)),
               ),
             ],
           ),

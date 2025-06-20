@@ -64,6 +64,5 @@ class MealFoodModel extends MealFood {
   factory MealFoodModel.fromJson(Map<String, dynamic> json) =>
       _$MealFoodModelFromJson(json);
 
-  @override
   Map<String, dynamic> toJson() => _$MealFoodModelToJson(this);
 }

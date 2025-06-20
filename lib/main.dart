@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/core/routing/app_router.dart';
+import 'package:trepi_app/core/styles/trepi_theme.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth/authentication_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/auth_form/auth_form_bloc.dart';
 import 'package:trepi_app/features/authentication/presentation/bloc/email_verification/email_verification_bloc.dart';
@@ -70,9 +71,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp.router(
         title: 'Trepi App',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
+        theme: trepiTheme,
         routerConfig: appRouter,
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:trepi_app/features/food_search/data/models/food_model.dart';
 import 'package:trepi_app/features/meals/data/models/meal_food_model.dart';
 import 'package:trepi_app/features/meals/data/models/meal_model.dart';
 import 'package:trepi_app/features/meals/domain/entities/meal.dart';
