@@ -7,6 +7,7 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
   final Widget body;
   final int selectedIndex;
   final ValueChanged<int> onDestinationSelected;
+  final Widget trailing;
 
   const ScaffoldWithNavigationBar({
     super.key,
@@ -14,6 +15,7 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
     required this.selectedIndex,
     required this.onDestinationSelected,
     required this.destinations,
+    this.trailing = const SizedBox.shrink(),
   });
 
   @override
@@ -22,12 +24,13 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
       body: body,
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
-        destinations: destinations.map((destination) {
+        destinations: [...destinations.map((destination) {
           return NavigationDestination(
             icon: destination.icon,
             label: destination.label,
           );
-        }).toList(),
+        }),
+        trailing],
         onDestinationSelected: onDestinationSelected,
       ),
     );

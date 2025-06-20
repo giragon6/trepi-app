@@ -32,6 +32,4 @@ class FoodDetails {
     this.brandedFoodCategory,
     required this.nutrients
   });
-
-
 }

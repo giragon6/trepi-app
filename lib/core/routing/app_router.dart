@@ -17,6 +17,7 @@ import 'package:trepi_app/features/home/presentation/pages/home_page.dart';
 import 'package:trepi_app/features/meals/presentation/pages/edit_meal_page.dart';
 import 'package:trepi_app/features/meals/presentation/pages/meal_details_page.dart';
 import 'package:trepi_app/features/meals/presentation/pages/meals_page.dart';
+import 'package:trepi_app/features/settings/presentation/settings_page.dart';
 import 'route_names.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -67,6 +68,12 @@ final GoRouter appRouter = GoRouter(
       );
     }
     ),
+    GoRoute(
+      path: RouteNames.settings,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: SettingsPage()
+      )
+    )
   ],
   redirect: (BuildContext context, GoRouterState state) {
     final authBloc = context.read<AuthenticationBloc>();

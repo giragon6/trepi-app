@@ -27,7 +27,7 @@ enum Macro {
   }
 }
 
-class NutrientLookup {
+class NutrientDataService {
   static Result<Map<String, dynamic>>? _nutrientResult;
 
   

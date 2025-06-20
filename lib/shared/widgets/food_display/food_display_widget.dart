@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:trepi_app/core/injection/injection.dart';
+import 'package:trepi_app/core/services/nutrient_data_service.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
-import 'package:trepi_app/shared/constants/nutrient_lookup.dart';
+import 'package:trepi_app/features/nutrient_config/presentation/bloc/nutrient_config_bloc.dart';
 import 'package:trepi_app/shared/widgets/food_display/macro_wheel.dart';
 import 'package:trepi_app/utils/get_nutrient_amount.dart';
 import 'package:trepi_app/utils/result.dart';
@@ -10,21 +12,8 @@ class FoodDisplayWidget extends StatelessWidget {
 
   const FoodDisplayWidget({
     super.key,
-    required this.foodDetails,
+    required this.foodDetails
   });
-
-  // TODO: Add config
-  static const List<int> _defaultNutrientIds = [
-    1008, // Energy (calories)
-    1003, // Protein
-    1004, // Total fat
-    1005, // Carbohydrates
-    1079, // Fiber
-    1093, // Sodium
-    1087, // Calcium
-    1089, // Iron
-    1162, // Vitamin C
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +107,7 @@ class FoodDisplayWidget extends StatelessWidget {
         const SizedBox(height: 12),
         Expanded(
         child: FutureBuilder<Result<Map<String, dynamic>>>(
-          future: NutrientLookup.nutrients,
+          future: NutrientDataService.nutrients,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -140,8 +129,8 @@ class FoodDisplayWidget extends StatelessWidget {
             
             return switch (result) {
               Ok(value: final nutrientData) => GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
                   childAspectRatio: 2.5,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 8,
@@ -182,11 +171,26 @@ class FoodDisplayWidget extends StatelessWidget {
     );
   }
 
+  static const _defaultNutrientIds = [
+    1079, // Fiber
+    1093, // Sodium
+    1087, // Calcium
+    1089, // Iron
+    1162, // Vitamin C
+  ];
+
   List<dynamic> _getVisibleNutrients() {
-    final visibleNutrientIds = _defaultNutrientIds.toSet();
+    final NutrientConfigState state = getIt<NutrientConfigBloc>().state;
+
+    // TODO: she don't work yet 😔
+    // final visibleNutrientIdsSet = state is NutrientConfigLoadedState 
+    //                                 ? state.commonNutrients.map((nutrient) => nutrient.id).toList()
+    //                                 : _defaultNutrientIds;
+
+    final visibleNutrientIdsSet = _defaultNutrientIds;
     
     final visibleNutrients = foodDetails.nutrients
-        .where((nutrient) => visibleNutrientIds.contains(nutrient.nutrientId))
+        .where((nutrient) => visibleNutrientIdsSet.contains(nutrient.nutrientId))
         .toList();
     
     return visibleNutrients;

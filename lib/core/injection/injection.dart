@@ -23,6 +23,11 @@ import 'package:trepi_app/features/meals/domain/usecases/get_meal_details.dart';
 import 'package:trepi_app/features/meals/domain/usecases/update_meal_details.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
+import 'package:trepi_app/features/nutrient_config/data/datasources/nutrient_config_data_source.dart';
+import 'package:trepi_app/features/nutrient_config/data/repositories/nutrient_config_repository_impl.dart';
+import 'package:trepi_app/features/nutrient_config/domain/repositories/nutrient_config_repository.dart';
+import 'package:trepi_app/features/nutrient_config/domain/usecases/get_nutrients.dart';
+import 'package:trepi_app/features/nutrient_config/presentation/bloc/nutrient_config_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -107,5 +112,21 @@ Future<void> configureDependencies() async {
 
   getIt.registerLazySingleton<EmailVerificationBloc>(
     () => EmailVerificationBloc(verifyEmail: getIt<VerifyEmail>()),
+  );
+
+  getIt.registerLazySingleton<GetNutrients>(
+    () => GetNutrients(getIt<NutrientConfigRepository>()),
+  );
+  
+  getIt.registerLazySingleton<NutrientConfigRepository>(
+    () => NutrientConfigRepositoryImpl(getIt<NutrientConfigDataSource>()),
+  );
+
+  getIt.registerLazySingleton<NutrientConfigDataSource>(
+    () => NutrientConfigDataSource(),
+  );
+
+  getIt.registerLazySingleton<NutrientConfigBloc>(
+    () => NutrientConfigBloc(getNutrients: getIt<GetNutrients>()),
   );
 }

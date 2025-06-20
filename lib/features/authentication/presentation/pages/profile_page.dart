@@ -9,6 +9,21 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return 
+      Scaffold(
+        appBar: AppBar(
+          title: const Text('Profile'),
+        ),
+        body: Column(children: [
+          ElevatedButton(onPressed: () => context.push(RouteNames.settings), child: Text('Settings')),
+          _buildSignOutButton(context)
+        ],
+        ),
+      );
+      
+  }
+
+  Widget _buildSignOutButton(BuildContext context) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(builder: 
       (context, state) {
         switch (state) {

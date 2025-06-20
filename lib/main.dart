@@ -13,6 +13,7 @@ import 'package:trepi_app/features/food_search/presentation/bloc/food_details/fo
 import 'package:trepi_app/features/food_search/presentation/bloc/food_search/food_search_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meal_details/meal_details_bloc.dart';
 import 'package:trepi_app/features/meals/presentation/bloc/meals/meals_bloc.dart';
+import 'package:trepi_app/features/nutrient_config/presentation/bloc/nutrient_config_bloc.dart';
 import 'package:trepi_app/firebase_options.dart';
 
 void main() async {
@@ -67,7 +68,11 @@ class MyApp extends StatelessWidget {
             return getIt<EmailVerificationBloc>();
           },
         ),
-        
+        BlocProvider<NutrientConfigBloc>(
+          create: (context) {
+            return getIt<NutrientConfigBloc>();
+          },
+        ),
       ],
       child: MaterialApp.router(
         title: 'Trepi App',

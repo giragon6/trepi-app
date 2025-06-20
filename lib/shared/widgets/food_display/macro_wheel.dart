@@ -96,7 +96,8 @@ class MacroWheel extends StatelessWidget {
   }
 
   Widget _buildLegend() {
-    return Row(
+    return Flex(
+      direction: Axis.horizontal,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         _buildLegendItem('Protein', Colors.blue, proteinGrams),

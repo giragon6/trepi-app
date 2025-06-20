@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
+import 'package:trepi_app/features/nutrient_config/domain/entities/nutrient_config.dart';
+import 'package:trepi_app/features/nutrient_config/presentation/bloc/nutrient_config_bloc.dart';
 import 'package:trepi_app/shared/widgets/food_display/food_display_widget.dart';
 
 class FoodLookupPage extends StatefulWidget {
@@ -13,18 +15,10 @@ class FoodLookupPage extends StatefulWidget {
 
 class _FoodLookupPageState extends State<FoodLookupPage> {
   final _controller = TextEditingController();
-  late final FoodDetailsBloc _foodBloc;
-
-  @override
-  void initState() {
-    super.initState();
-    _foodBloc = getIt<FoodDetailsBloc>();
-  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _foodBloc,
+    return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -42,7 +36,7 @@ class _FoodLookupPageState extends State<FoodLookupPage> {
               onPressed: () {
                 final fdcId = int.tryParse(_controller.text);
                 if (fdcId != null) {
-                  _foodBloc.add(GetFoodDetailsEvent(fdcId));
+                  BlocProvider.of<FoodDetailsBloc>(context).add(GetFoodDetailsEvent(fdcId));
                 }
               },
               child: const Text('Search Food'),
@@ -50,7 +44,6 @@ class _FoodLookupPageState extends State<FoodLookupPage> {
             const SizedBox(height: 24),
             Expanded(
               child: BlocBuilder<FoodDetailsBloc, FoodDetailsState>(
-                bloc: _foodBloc, 
                 builder: (context, state) {
                   if (state is FoodDetailsInitialState) {
                     return const Center(child: Text('Enter an FDC ID to search'));
@@ -60,7 +53,7 @@ class _FoodLookupPageState extends State<FoodLookupPage> {
                   }
                   if (state is FoodDetailsLoadedState) {
                     return FoodDisplayWidget(
-                      foodDetails: state.foodDetails,
+                      foodDetails: state.foodDetails
                     );
                   }
                   if (state is FoodDetailsErrorState) {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:trepi_app/core/services/nutrient_data_service.dart' show Macro;
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_details/food_details_bloc.dart';
 import 'package:trepi_app/features/food_search/presentation/bloc/food_search/food_search_bloc.dart';
 import 'package:trepi_app/features/meals/domain/entities/meal_food.dart';
-import 'package:trepi_app/shared/constants/nutrient_lookup.dart';
 import 'package:trepi_app/utils/get_nutrient_amount.dart';
 import 'package:trepi_app/utils/result.dart';
 

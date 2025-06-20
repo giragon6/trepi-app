@@ -71,7 +71,10 @@ class AdaptiveScaffold extends StatelessWidget {
           body: navigationShell,
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _goBranch,
-          destinations: destinations
+          destinations: destinations,
+          trailing: AuthImageWidget(
+            onPressed: () => context.push(RouteNames.profile)
+          )
         );
       } else {
         return ScaffoldWithNavigationRail(

@@ -1,6 +1,6 @@
 part of 'meal_details_bloc.dart';
 
-abstract class MealDetailsEvent extends Equatable {
+sealed class MealDetailsEvent extends Equatable {
   const MealDetailsEvent();
 
   @override
