@@ -40,14 +40,14 @@ class AdaptiveScaffold extends StatelessWidget {
       location: RouteNames.foodSearch,
     ),
     AdaptiveScaffoldDestination(
-      label: 'Food ID Lookup',
-      icon: Icon(Icons.info),
-      location: RouteNames.foodLookup,
-    ),
-    AdaptiveScaffoldDestination(
       label: 'Meals',
       icon: Icon(Icons.restaurant_menu),
       location: RouteNames.meals,
+    ),
+    AdaptiveScaffoldDestination(
+      label: 'Food ID Lookup',
+      icon: Icon(Icons.info),
+      location: RouteNames.foodLookup,
     ),
   ];
 

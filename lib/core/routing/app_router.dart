@@ -40,8 +40,9 @@ final GoRouter appRouter = GoRouter(
             )
           ]
         ),
-        ..._foodSearchBranches,
-        mealBranch,
+        _searchBranch,
+        _mealBranch,
+        _lookupBranch,
         StatefulShellBranch(
           routes: [
               GoRoute(
@@ -151,30 +152,31 @@ final List<GoRoute> _authBranches = [
   ),
 ];
 
-final List<StatefulShellBranch> _foodSearchBranches = [
-  StatefulShellBranch(
-    routes: [
-      GoRoute(
-        path: RouteNames.foodSearch,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: FoodSearchPage() 
-        )
+final StatefulShellBranch _searchBranch = 
+StatefulShellBranch(
+  routes: [
+    GoRoute(
+      path: RouteNames.foodSearch,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: FoodSearchPage() 
       )
-    ]
-  ),
-  StatefulShellBranch(
-    routes: [
-      GoRoute(
-        path: RouteNames.foodLookup,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: FoodLookupPage()
-        )
-      ),
-    ]
-  ),
-];
+    )
+  ]
+);
 
-final StatefulShellBranch mealBranch = 
+final StatefulShellBranch _lookupBranch =
+StatefulShellBranch(
+  routes: [
+    GoRoute(
+      path: RouteNames.foodLookup,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: FoodLookupPage()
+      )
+    ),
+  ]
+);
+
+final StatefulShellBranch _mealBranch = 
 StatefulShellBranch(
   routes: [
     GoRoute(

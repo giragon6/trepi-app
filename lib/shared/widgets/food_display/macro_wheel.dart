@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trepi_app/core/styles/trepi_color.dart';
 
 class Macro {
   final String name;
@@ -83,41 +84,41 @@ class MacroWheel extends StatelessWidget {
           painter: MacroWheelPainter(
             radius: 100,
             macros: [
-              Macro(name: 'Protein', grams: proteinGrams, color: Colors.blue),
-              Macro(name: 'Carbs', grams: carbGrams, color: Colors.green),
-              Macro(name: 'Fat', grams: fatGrams, color: Colors.red),
+              Macro(name: 'Protein', grams: proteinGrams, color: TrepiColor.green),
+              Macro(name: 'Carbs', grams: carbGrams, color: TrepiColor.orange),
+              Macro(name: 'Fat', grams: fatGrams, color: TrepiColor.brown),
             ],
           ),
         ),
-        const SizedBox(height: 16),
-        _buildLegend(),
+        // const SizedBox(height: 16),
+        // _buildLegend(),
       ],
     );
   }
 
-  Widget _buildLegend() {
-    return Flex(
-      direction: Axis.horizontal,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildLegendItem('Protein', Colors.blue, proteinGrams),
-        _buildLegendItem('Carbs', Colors.green, carbGrams),
-        _buildLegendItem('Fat', Colors.red, fatGrams),
-      ],
-    );
-  }
+  // Widget _buildLegend() {
+  //   return Flex(
+  //     direction: Axis.horizontal,
+  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //     children: [
+  //       _buildLegendItem('Protein', TrepiColor.green, proteinGrams),
+  //       _buildLegendItem('Carbs', TrepiColor.orange, carbGrams),
+  //       _buildLegendItem('Fat', TrepiColor.brown, fatGrams),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildLegendItem(String label, Color color, double grams) {
-    return Row(
-      children: [
-        Container(
-          width: 16,
-          height: 16,
-          color: color,
-        ),
-        const SizedBox(width: 8),
-        Text('$label: ${grams.toStringAsFixed(1)}g'),
-      ],
-    );
-  }
+  // Widget _buildLegendItem(String label, Color color, double grams) {
+  //   return Row(
+  //     children: [
+  //       Container(
+  //         width: 16,
+  //         height: 16,
+  //         color: color,
+  //       ),
+  //       const SizedBox(width: 8),
+  //       Text('$label: ${grams.toStringAsFixed(1)}g'),
+  //     ],
+  //   );
+  // }
 }
