@@ -163,7 +163,6 @@ class ProfilePage extends StatelessWidget {
               ),
             ],
           ),
-          
           if (!user.isEmailVerified) ...[
             const SizedBox(height: 8),
             Text(
@@ -187,8 +186,6 @@ class ProfilePage extends StatelessWidget {
           icon: Icons.account_circle,
           title: 'Account Information',
           children: [
-            _buildInfoRow('User ID', user.uid),
-            _buildInfoRow('Provider', user.providerId),
             _buildInfoRow('Email Status', user.isEmailVerified ? 'Verified' : 'Not Verified'),
           ],
         ),

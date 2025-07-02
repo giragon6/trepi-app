@@ -30,7 +30,6 @@ enum Macro {
 class NutrientDataService {
   static Result<Map<String, dynamic>>? _nutrientResult;
 
-  
   static Future<Result<Map<String, dynamic>>> get nutrients async {
     if (_nutrientResult == null) {
       try {

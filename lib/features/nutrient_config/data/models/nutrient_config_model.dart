@@ -48,7 +48,7 @@ class NutrientConfigModel extends NutrientConfig {
       'rank': rank,
     };
   }
-
+  
   NutrientConfigModel withError(String errorMessage) {
     return NutrientConfigModel(
       id: -1,

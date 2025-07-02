@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:trepi_app/core/injection/injection.dart';
 import 'package:trepi_app/core/services/nutrient_data_service.dart';
 import 'package:trepi_app/core/styles/trepi_color.dart';
 import 'package:trepi_app/features/food_search/domain/entities/food_details.dart';
+import 'package:trepi_app/features/nutrient_config/presentation/bloc/nutrient_config_bloc.dart';
 import 'package:trepi_app/shared/widgets/food_display/macro_wheel.dart';
 import 'package:trepi_app/utils/get_nutrient_amount.dart';
 import 'package:trepi_app/utils/result.dart';
@@ -302,13 +304,13 @@ class FoodDisplayWidget extends StatelessWidget {
   ];
 
   List<dynamic> _getVisibleNutrients() {
-    // TODO: Integrate with NutrientConfigBloc when ready
-    // final NutrientConfigState state = getIt<NutrientConfigBloc>().state;
-    // final visibleNutrientIdsSet = state is NutrientConfigLoadedState 
-    //                                 ? state.commonNutrients.map((nutrient) => nutrient.id).toList()
-    //                                 : _defaultNutrientIds;
+    final NutrientConfigState state = getIt<NutrientConfigBloc>().state;
 
-    const visibleNutrientIdsSet = _defaultNutrientIds;
+    debugPrint('Current NutrientConfigState: $state');
+    
+    final visibleNutrientIdsSet = state is NutrientConfigLoadedState 
+                                    ? state.selectedNutrients.map((nutrient) => nutrient.id).toList()
+                                    : _defaultNutrientIds;
     
     final visibleNutrients = foodDetails.nutrients
         .where((nutrient) => visibleNutrientIdsSet.contains(nutrient.nutrientId))

@@ -10,12 +10,12 @@ sealed class NutrientConfigState extends Equatable {
 class NutrientConfigLoadingState extends NutrientConfigState {}
 
 class NutrientConfigLoadedState extends NutrientConfigState {
-  final List<NutrientConfig> commonNutrients;
+  final List<NutrientConfig> selectedNutrients;
 
-  const NutrientConfigLoadedState(this.commonNutrients);
+  const NutrientConfigLoadedState(this.selectedNutrients);
 
   @override
-  List<Object?> get props => [commonNutrients];
+  List<Object?> get props => [selectedNutrients];
 }
 
 class NutrientConfigErrorState extends NutrientConfigState {

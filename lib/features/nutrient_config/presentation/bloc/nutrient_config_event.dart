@@ -18,3 +18,12 @@ class NutrientConfigToggleEvent extends NutrientConfigEvent {
   @override
   List<Object?> get props => [nutrientId, isEnabled];
 }
+
+class NutrientConfigSaveEvent extends NutrientConfigEvent {
+  final List<int> selectedNutrientIds;
+
+  const NutrientConfigSaveEvent({required this.selectedNutrientIds});
+
+  @override
+  List<Object?> get props => [selectedNutrientIds];
+}
